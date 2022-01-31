@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import React from 'react'
-import mapboxgl from 'mapbox-gl'
 import ky from 'ky'
 import gcoord from 'gcoord'
-
-import 'mapbox-gl/dist/mapbox-gl.css'
+import { Scene, PointLayer, LineLayer } from '@antv/l7';
+import { Mapbox } from '@antv/l7-maps';
+import { GaodeMap } from '@antv/l7-maps';
 
 export interface Props {}
 
@@ -15,8 +15,8 @@ const Component = (props: Props) => {
   const [lat, setLat] = useState(39.9)
   const [zoom, setZoom] = useState(11)
   const [address, setAddress] = useState('')
-  mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
-  console.log(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN)
+
+  let scene: Scene
 
   useEffect(() => {
     if (map.current) {
@@ -25,36 +25,47 @@ const Component = (props: Props) => {
     if (!mapContainer.current) {
       return
     }
-    let mapCom = (map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v10',
-      center: [lng, lat],
-      zoom: zoom,
-    }))
-
-    mapCom.addControl(
-      new mapboxgl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true,
-        },
-        trackUserLocation: true,
-        showUserHeading: true,
-      })
-    )
-
-    mapCom.on('click', async e => {
-      // When the map is clicked, get the geographic coordinate.
-      const coordinate = mapCom.unproject(e.point)
-      console.log(coordinate)
+    scene = new Scene({
+      id: mapContainer.current,
+      logoVisible: false,
+      map: new GaodeMap({
+        style: 'light',
+        pitch: 0,
+        center: [116.4, 39.9],
+        zoom: 9,
+        plugin: []
+      }),
+    });
+    scene.on('loaded', () => {
+      console.log('loaded')
+      loadData()
     })
+    // scene.on('click', (ev) => {
+    //   console.log(ev)
+    //   loadData()
+    // })
+    
   })
+
+  const loadData = async () => {
+    const data_line = await ky.get('https://ddiu-10049571.cos.ap-shanghai.myqcloud.com/beijing_line_1643535095.json').json()
+    const lineLayer = new LineLayer()
+      .source(data_line)
+      .size(0.6)
+      .shape('line')
+      .color('#312B60')
+
+    scene.addLayer(lineLayer)
+    lineLayer.show()
+  }
+
 
   return (
     <div className="h-full w-full relative">
       {/* <div className="sidebar">
         Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
       </div> */}
-      <div ref={mapContainer} className="h-full w-full relative"></div>
+      <div id="mapContainer" ref={mapContainer} className="h-full w-full relative"></div>
     </div>
   )
 }

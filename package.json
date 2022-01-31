@@ -7,14 +7,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@antv/l7": "^2.7.3",
     "gcoord": "^0.3.2",
     "ky": "^0.28.7",
-    "mapbox-gl": "^2.6.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
-    "@types/mapbox-gl": "^2.6.0",
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.10",
     "@vitejs/plugin-react": "^1.0.7",
