@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import React from 'react'
 import ky from 'ky'
 import gcoord from 'gcoord'
-import { Scene, PointLayer, LineLayer } from '@antv/l7';
-import { Mapbox } from '@antv/l7-maps';
-import { GaodeMap } from '@antv/l7-maps';
+import { Scene, PointLayer, LineLayer } from '@antv/l7'
+import { Mapbox } from '@antv/l7-maps'
+import { GaodeMap } from '@antv/l7-maps'
+import md5 from 'js-md5'
 
 export interface Props {}
 
@@ -47,13 +48,39 @@ const Component = (props: Props) => {
     
   })
 
+  const decryptText = (encryptedText: string): string => {
+    let newTextArr = encryptedText.split('').reverse()
+    newTextArr = newTextArr.map((char) => {
+      const charCode = char.charCodeAt(0)
+      return String.fromCharCode(charCode - 1)
+    })
+    const newText = newTextArr.join('')
+    const decodedText = atob(newText)
+    return decodedText
+  }
+  
+  const parseLineData = (lineData: string): string[] => {
+    const lineDataArr = lineData.split('|').map(x => decryptText(x))
+    return lineDataArr
+  }
+
+  const generateDownloadUrl = (secret: string, path: string, host: string) => {
+    const timestampHex = (Math.floor(Date.now() / 1000)).toString(16)
+    const md5Hash = md5(secret + path + timestampHex)
+    return `${host}/${md5Hash}/${timestampHex}${path}`
+  }
+
   const loadData = async () => {
-    const data_line: string[] = await ky.get('https://service-4a2rnaqt-1251746595.bj.apigw.tencentcs.com/data/line', {searchParams: {city: '1'}}).json()
-    // console.log(data_line)
-    if (data_line) {
+    const host = import.meta.env.VITE_CDN_HOST
+    const path = '/data/line/beijing.data'
+    const secret = import.meta.env.VITE_CDN_VERIFY_SECRET
+    const url = generateDownloadUrl(secret, path, host)
+    const data_line = await ky.get(url).text()
+    const parsed = parseLineData(data_line)
+    if (parsed) {
       const totalPath = []
-      for (let i = 0; i < data_line.length; i++) {
-        const line_str = data_line[i]
+      for (let i = 0; i < parsed.length; i++) {
+        const line_str = parsed[i]
         const points = line_str.split(';').map(p => p.split(','))
         let last_blng = 0
         let last_blat = 0
@@ -68,7 +95,6 @@ const Component = (props: Props) => {
         }
         totalPath.push(path)
       }
-      console.log(totalPath)
       const geoJsonData = {
         "type": "FeatureCollection",
         "features": [
