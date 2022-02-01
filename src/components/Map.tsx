@@ -3,11 +3,12 @@ import React from 'react'
 import ky from 'ky'
 import gcoord from 'gcoord'
 import { Scene, PointLayer, LineLayer } from '@antv/l7'
-import { Mapbox } from '@antv/l7-maps'
-import { GaodeMapV2 } from '@antv/l7-maps'
+import { GaodeMapV2, Mapbox } from '@antv/l7-maps'
 import md5 from 'js-md5'
 
-export interface Props {}
+export interface Props {
+  setLoading: (loading: boolean) => void
+}
 
 const Component = (props: Props) => {
   const mapContainer = useRef(null)
@@ -42,6 +43,7 @@ const Component = (props: Props) => {
       }),
     })
     scene.on('loaded', () => {
+      props.setLoading(false)
       console.log('loaded')
       loadData()
     })
@@ -50,7 +52,7 @@ const Component = (props: Props) => {
     //   loadData()
     // })
     
-  })
+  }, [])
 
   const decryptText = (encryptedText: string): string => {
     let newTextArr = encryptedText.split('').reverse()
@@ -75,6 +77,7 @@ const Component = (props: Props) => {
   }
 
   const loadData = async () => {
+    props.setLoading(true)
     const host = import.meta.env.VITE_CDN_HOST
     const path = '/data/line/beijing.data'
     const secret = import.meta.env.VITE_CDN_VERIFY_SECRET
@@ -127,8 +130,7 @@ const Component = (props: Props) => {
       });
   
       scene.addLayer(lineLayer)
-      lineLayer.show()
-
+      props.setLoading(false)
     }
     
   }
