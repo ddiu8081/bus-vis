@@ -4,7 +4,7 @@ import ky from 'ky'
 import gcoord from 'gcoord'
 import { Scene, PointLayer, LineLayer } from '@antv/l7'
 import { Mapbox } from '@antv/l7-maps'
-import { GaodeMap } from '@antv/l7-maps'
+import { GaodeMapV2 } from '@antv/l7-maps'
 import md5 from 'js-md5'
 
 export interface Props {}
@@ -29,10 +29,12 @@ const Component = (props: Props) => {
     scene = new Scene({
       id: mapContainer.current,
       logoVisible: false,
-      map: new GaodeMap({
+      map: new GaodeMapV2({
         style: 'dark',
+        showLabel: false,
         pitch: 0,
         center: [116.4, 39.9],
+        features: ['bg', 'road', 'building', 'point'],
         zoom: 9,
         minZoom: 9,
         rotateEnable: false,
@@ -114,7 +116,7 @@ const Component = (props: Props) => {
         blend: 'normal',
       })
         .source(geoJsonData)
-        .size(0.9)
+        .size(0.8)
         .shape('line')
         .color('rgba(238, 161, 7, 0.5)')
 
