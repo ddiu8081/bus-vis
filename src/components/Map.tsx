@@ -30,13 +30,15 @@ const Component = (props: Props) => {
       id: mapContainer.current,
       logoVisible: false,
       map: new GaodeMap({
-        style: 'light',
+        style: 'dark',
         pitch: 0,
         center: [116.4, 39.9],
         zoom: 9,
-        plugin: []
+        minZoom: 9,
+        rotateEnable: false,
+        plugin: [],
       }),
-    });
+    })
     scene.on('loaded', () => {
       console.log('loaded')
       loadData()
@@ -112,12 +114,19 @@ const Component = (props: Props) => {
         blend: 'normal',
       })
         .source(geoJsonData)
-        .size(0.6)
+        .size(0.9)
         .shape('line')
-        .color('#312e81')
+        .color('rgba(238, 161, 7, 0.5)')
+
+      lineLayer.animate({
+        duration: 5,
+        interval: 0.4,
+        trailLength: 1.4
+      });
   
       scene.addLayer(lineLayer)
       lineLayer.show()
+
     }
     
   }
