@@ -8,6 +8,8 @@ import md5 from 'js-md5'
 
 export interface Props {
   setLoading: (loading: boolean) => void
+  animate: boolean
+  currentCity: CityItem
 }
 
 const Component = (props: Props) => {
@@ -17,8 +19,10 @@ const Component = (props: Props) => {
   const [lat, setLat] = useState(39.9)
   const [zoom, setZoom] = useState(11)
   const [address, setAddress] = useState('')
+  const [layer, setLayer] = useState(null)
+  const [loaded, setLoaded] = useState(false)
 
-  let scene: Scene
+  const scene = useRef<Scene | null>(null)
 
   useEffect(() => {
     if (map.current) {
@@ -27,7 +31,7 @@ const Component = (props: Props) => {
     if (!mapContainer.current) {
       return
     }
-    scene = new Scene({
+    scene.current = new Scene({
       id: mapContainer.current,
       logoVisible: false,
       map: new GaodeMapV2({
@@ -42,10 +46,11 @@ const Component = (props: Props) => {
         plugin: [],
       }),
     })
-    scene.on('loaded', () => {
+    scene.current.on('loaded', () => {
       props.setLoading(false)
       console.log('loaded')
-      loadData()
+      setLoaded(true)
+      loadData(props.currentCity.id)
     })
     // scene.on('click', (ev) => {
     //   console.log(ev)
@@ -53,6 +58,27 @@ const Component = (props: Props) => {
     // })
     
   }, [])
+
+  // useEffect(() => {
+  //   console.log('animate', props.animate)
+  //   console.log('lineLayer', layer)
+  //   if (!layer) {
+  //     return
+  //   }
+  //   if (props.animate) {
+  //     console.log('flyto')
+  //     layer.animate(true)
+  //     layer.show()
+  //   }
+  // }, [props.animate])
+
+  useEffect(() => {
+    if (loaded && scene.current) {
+      scene.current.removeAllLayer()
+      scene.current.setZoomAndCenter(9, props.currentCity.location)
+      loadData(props.currentCity.id)
+    }
+  }, [props.currentCity])
 
   const decryptText = (encryptedText: string): string => {
     let newTextArr = encryptedText.split('').reverse()
@@ -76,10 +102,13 @@ const Component = (props: Props) => {
     return `${host}/${md5Hash}/${timestampHex}${path}`
   }
 
-  const loadData = async () => {
+  const loadData = async (cityId: string) => {
+    if (!scene.current) {
+      return
+    }
     props.setLoading(true)
     const host = import.meta.env.VITE_CDN_HOST
-    const path = '/data/line/beijing.data'
+    const path = `/data/line/${cityId}.data`
     const secret = import.meta.env.VITE_CDN_VERIFY_SECRET
     const url = generateDownloadUrl(secret, path, host)
     const data_line = await ky.get(url).text()
@@ -129,7 +158,7 @@ const Component = (props: Props) => {
         trailLength: 1.4
       });
   
-      scene.addLayer(lineLayer)
+      scene.current.addLayer(lineLayer)
       props.setLoading(false)
     }
     
