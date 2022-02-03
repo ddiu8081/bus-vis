@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
-import '@themesberg/flowbite'
+import 'flowbite'
 
 ReactDOM.render(
   <React.StrictMode>
