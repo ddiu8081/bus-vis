@@ -1,1 +1,4 @@
-/// <reference types="@danmarshall/deckgl-typings" />
+import * as DeckTypings from "@danmarshall/deckgl-typings"
+declare module "deck.gl" {
+    export namespace DeckTypings {}
+}
