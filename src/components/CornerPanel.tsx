@@ -1,11 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Icon } from '@iconify/react'
 
-import Spinner from './Spinner'
-
 export interface Props {
-  animate: boolean
-  setAnimate: (animate: boolean) => void
   currentCity: CityItem
   cityList: CityList
   setCity: (city: CityItem) => void
@@ -15,10 +11,6 @@ const Component = (props: Props) => {
   const [address, setAddress] = useState('')
 
   useEffect(() => {})
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    props.setAnimate(e.target.checked)
-  }
 
   const handleSelectCity = (city: CityItem) => {
     props.setCity(city)
@@ -32,8 +24,8 @@ const Component = (props: Props) => {
 
   return (
     <div className="absolute left-4 top-4 z-10 w-96">
-      <div className="flex items-center text-white">
-        <button id="dropdownButton" data-dropdown-toggle="dropdown" className="flex items-center py-2 pr-4 pl-3 w-full font-medium text-gray-400 hover:bg-gray-700 md:hover:bg-transparent hover:text-white focus:text-white">
+      <div className="flex items-center">
+        <button id="dropdownButton" data-dropdown-toggle="dropdown" className="flex items-center py-2 pr-4 pl-3 font-medium text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white">
           <span className="mr-1">{props.currentCity.name}</span>
           <Icon icon="gg:chevron-down" />
         </button>
@@ -43,11 +35,6 @@ const Component = (props: Props) => {
             </ul>
         </div>
       </div>
-      {/* <label className="flex relative items-center mb-4 cursor-pointer">
-        <input type="checkbox" id="toggle-example" className="sr-only" checked={props.animate} onChange={handleChange} />
-        <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
-        <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Animate</span>
-      </label> */}
     </div>
   )
 }

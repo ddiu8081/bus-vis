@@ -2,87 +2,48 @@ import { useState, useEffect, useRef } from 'react'
 import React from 'react'
 import ky from 'ky'
 import gcoord from 'gcoord'
-import { Scene, PointLayer, LineLayer } from '@antv/l7'
-import { GaodeMapV2, Mapbox } from '@antv/l7-maps'
 import md5 from 'js-md5'
+
+import DeckGL from '@deck.gl/react'
+import { FlyToInterpolator } from 'deck.gl'
+import { StaticMap } from 'react-map-gl'
+import { ViewStateProps } from '@deck.gl/core/lib/deck'
+import { PathLayer } from '@deck.gl/layers'
 
 export interface Props {
   setLoading: (loading: boolean) => void
-  animate: boolean
   currentCity: CityItem
 }
 
 const Component = (props: Props) => {
   const mapContainer = useRef(null)
-  const map = useRef<mapboxgl.Map | null>(null)
-  const [lng, setLng] = useState(116.4)
-  const [lat, setLat] = useState(39.9)
-  const [zoom, setZoom] = useState(11)
-  const [address, setAddress] = useState('')
-  const [layer, setLayer] = useState(null)
-  const [loaded, setLoaded] = useState(false)
+  const [initialState, setInitialState] = useState<ViewStateProps | undefined>(undefined)
+  const [layers, setLayers] = useState<any[]>([])
 
-  const scene = useRef<Scene | null>(null)
+  const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
   useEffect(() => {
-    if (map.current) {
-      return
-    }
     if (!mapContainer.current) {
       return
     }
-    scene.current = new Scene({
-      id: mapContainer.current,
-      logoVisible: false,
-      map: new GaodeMapV2({
-        style: 'dark',
-        showLabel: false,
-        pitch: 0,
-        center: [116.4, 39.9],
-        features: ['bg', 'road', 'building', 'point'],
-        zoom: 9,
-        minZoom: 9,
-        rotateEnable: false,
-        plugin: [],
-      }),
-    })
-    scene.current.on('loaded', () => {
-      props.setLoading(false)
-      console.log('loaded')
-      setLoaded(true)
-      loadData(props.currentCity.id)
-    })
-    // scene.on('click', (ev) => {
-    //   console.log(ev)
-    //   loadData()
-    // })
-    
   }, [])
 
-  // useEffect(() => {
-  //   console.log('animate', props.animate)
-  //   console.log('lineLayer', layer)
-  //   if (!layer) {
-  //     return
-  //   }
-  //   if (props.animate) {
-  //     console.log('flyto')
-  //     layer.animate(true)
-  //     layer.show()
-  //   }
-  // }, [props.animate])
-
   useEffect(() => {
-    if (loaded && scene.current) {
-      scene.current.removeAllLayer()
-      scene.current.setZoomAndCenter(9, props.currentCity.location)
-      loadData(props.currentCity.id)
-    }
+    setInitialState({
+      longitude: props.currentCity.location[0],
+      latitude: props.currentCity.location[1],
+      zoom: 9,
+      pitch: 0,
+      bearing: 0,
+      transitionDuration: 3000,
+      transitionInterpolator: new FlyToInterpolator(),
+    })
+    loadData(props.currentCity.id)
   }, [props.currentCity])
 
   const decryptText = (encryptedText: string): string => {
     let newTextArr = encryptedText.split('').reverse()
-    newTextArr = newTextArr.map((char) => {
+    newTextArr = newTextArr.map(char => {
       const charCode = char.charCodeAt(0)
       return String.fromCharCode(charCode - 1)
     })
@@ -90,27 +51,24 @@ const Component = (props: Props) => {
     const decodedText = atob(newText)
     return decodedText
   }
-  
+
   const parseLineData = (lineData: string): string[] => {
     const lineDataArr = lineData.split('|').map(x => decryptText(x))
     return lineDataArr
   }
 
-  const generateDownloadUrl = (secret: string, path: string, host: string) => {
-    const timestampHex = (Math.floor(Date.now() / 1000)).toString(16)
+  const generateDownloadUrl = (secret: string, path: string) => {
+    const host = import.meta.env.VITE_CDN_HOST
+    const timestampHex = Math.floor(Date.now() / 1000).toString(16)
     const md5Hash = md5(secret + path + timestampHex)
     return `${host}/${md5Hash}/${timestampHex}${path}`
   }
 
   const loadData = async (cityId: string) => {
-    if (!scene.current) {
-      return
-    }
     props.setLoading(true)
-    const host = import.meta.env.VITE_CDN_HOST
-    const path = `/data/line/${cityId}.data`
-    const secret = import.meta.env.VITE_CDN_VERIFY_SECRET
-    const url = generateDownloadUrl(secret, path, host)
+    const requestPath = `/data/line/${cityId}.data`
+    const requestSecret = import.meta.env.VITE_CDN_VERIFY_SECRET
+    const url = generateDownloadUrl(requestSecret, requestPath)
     const data_line = await ky.get(url).text()
     const parsed = parseLineData(data_line)
     if (parsed) {
@@ -120,57 +78,56 @@ const Component = (props: Props) => {
         const points = line_str.split(';').map(p => p.split(','))
         let last_blng = 0
         let last_blat = 0
-        let path = []
+        let currentPath: [number, number][] = []
         for (let j = 0; j < points.length; j++) {
           const point = points[j]
           const blng = parseInt(point[0]) + last_blng
           const blat = parseInt(point[1]) + last_blat
           last_blng = blng
           last_blat = blat
-          path.push([blng / 1000000, blat / 1000000])
-        }
-        totalPath.push(path)
-      }
-      const geoJsonData = {
-        "type": "FeatureCollection",
-        "features": [
-          {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-              "type": "MultiLineString",
-              "coordinates": totalPath
-            }
+          if (blng && blat) {
+            currentPath.push(
+              gcoord.transform(
+                [blng / 1000000, blat / 1000000],
+                gcoord.GCJ02,
+                gcoord.WGS84
+              )
+            )
           }
-        ]
+        }
+        totalPath.push({
+          path: currentPath,
+          name: line_str,
+        })
       }
-      const lineLayer = new LineLayer({
-        blend: 'normal',
-      })
-        .source(geoJsonData)
-        .size(0.8)
-        .shape('line')
-        .color('rgba(238, 161, 7, 0.5)')
 
-      lineLayer.animate({
-        duration: 5,
-        interval: 0.4,
-        trailLength: 1.4
-      });
-  
-      scene.current.addLayer(lineLayer)
+      const layer = new PathLayer({
+        id: 'path-layer',
+        data: totalPath,
+        pickable: true,
+        widthScale: 10,
+        widthMinPixels: 1.2,
+        widthMaxPixels: 2.4,
+        jointRounded: true,
+        getPath: d => d.path,
+        getColor: [60, 10, 10, 15],
+        getWidth: 5,
+      })
+
+      setLayers([layer])
       props.setLoading(false)
     }
-    
   }
-
 
   return (
     <div className="h-full w-full relative">
-      {/* <div className="sidebar">
-        Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-      </div> */}
-      <div id="mapContainer" ref={mapContainer} className="h-full w-full relative"></div>
+      <DeckGL
+        initialViewState={initialState}
+        controller={true}
+        layers={layers}
+      >
+        <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
+      </DeckGL>
     </div>
   )
 }

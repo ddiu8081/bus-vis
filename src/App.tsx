@@ -14,9 +14,9 @@ function App() {
 
   return (
     <div className="w-screen h-screen relative">
-      <CornerPanel animate={animate} setAnimate={setAnimate} currentCity={currentCity} cityList={cityList} setCity={setCurrentCity} />
+      <CornerPanel currentCity={currentCity} cityList={cityList} setCity={setCurrentCity} />
       <Spinner show={loading} />
-      <Map setLoading={setLoading} animate={animate} currentCity={currentCity} />
+      <Map setLoading={setLoading} currentCity={currentCity} />
     </div>
   )
 }
