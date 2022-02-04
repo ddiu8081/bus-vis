@@ -5,10 +5,12 @@ import gcoord from 'gcoord'
 import md5 from 'js-md5'
 
 import DeckGL from '@deck.gl/react'
-import { FlyToInterpolator } from 'deck.gl'
+import { FlyToInterpolator, PickInfo } from 'deck.gl'
 import { StaticMap } from 'react-map-gl'
 import { ViewStateProps } from '@deck.gl/core/lib/deck'
 import { PathLayer } from '@deck.gl/layers'
+
+import Tooltip from './Tooltip'
 
 export interface Props {
   setLoading: (loading: boolean) => void
@@ -20,6 +22,7 @@ const Component = (props: Props) => {
   const [initialState, setInitialState] = useState<ViewStateProps | undefined>(undefined)
   const [layers, setLayers] = useState<any[]>([])
   const [allLineData, setAllLineData] = useState<DrawLineItem[]>([])
+  const [hoverPickInfo, setHoverPickInfo] = useState<PickInfo<DrawLineItem> | null>(null)
 
   const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
@@ -49,10 +52,10 @@ const Component = (props: Props) => {
       getPath: d => d.path,
       getColor: props.mapStyle.foreground,
       getWidth: 10,
+      onHover: d => setHoverPickInfo(d)
     })
 
     setLayers([layer])
-    console.log('set layer')
   }, [props.mapStyle, allLineData])
 
   const decryptText = (encryptedText: string): string => {
@@ -131,13 +134,8 @@ const Component = (props: Props) => {
         initialViewState={initialState}
         controller={true}
         layers={layers}
-        getTooltip={object => {
-          if (!object || !object.object) {
-            return null
-          }
-          return object.object.name
-        }}
       >
+        <Tooltip hoverPickInfo={hoverPickInfo} />
         <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle={props.mapStyle.styleUrl} />
       </DeckGL>
     </div>
