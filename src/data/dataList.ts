@@ -24,12 +24,12 @@ const cityList : CityList = {
 const mapStyleList : MapStyleList = {
   light: {
     id: 'light',
-    styleUrl: 'mapbox://styles/mapbox/light-v10',
+    styleUrl: 'mapbox://styles/ddiu8081/ckz82q8eb000c14o8uw4ky79d',
     foreground: [60, 10, 10, 25],
   },
   dark: {
     id: 'dark',
-    styleUrl: 'mapbox://styles/mapbox/dark-v10',
+    styleUrl: 'mapbox://styles/ddiu8081/ckz83gct0000i15qtsgc8z3gz',
     foreground: [238, 161, 7, 25],
   },
 }
