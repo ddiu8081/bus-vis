@@ -17,3 +17,8 @@ interface MapStyleItem {
 interface MapStyleList {
   [Key: string]: MapStyleItem
 }
+
+interface DrawLineItem {
+  name: string
+  path: [number, number][]
+}

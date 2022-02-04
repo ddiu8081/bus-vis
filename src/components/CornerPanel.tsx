@@ -34,7 +34,7 @@ const Component = (props: Props) => {
     <div className="absolute left-4 top-4 z-10 w-96">
       <div className="flex items-center">
         <div>
-          <button id="dropdownButton" data-dropdown-toggle="dropdown" className="flex items-center py-2 px-3 font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white">
+          <button id="dropdownButton" data-dropdown-toggle="dropdown" className="flex items-center py-2 px-3 font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white">
             <span className="mr-1">{props.currentCity.name}</span>
             <Icon icon="gg:chevron-down" />
           </button>
@@ -44,7 +44,7 @@ const Component = (props: Props) => {
               </ul>
           </div>
         </div>
-        <button type="button" onClick={ handleToggleMapStyle } className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg p-2.5">
+        <button type="button" onClick={ handleToggleMapStyle } className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg p-2.5">
           { props.mapStyleId == 'light' ? <Icon icon="ri:sun-fill" className="w-4 h-4" /> : <Icon icon="ri:moon-fill" className="w-4 h-4" /> }
         </button>
       </div>

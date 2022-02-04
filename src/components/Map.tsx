@@ -17,17 +17,11 @@ export interface Props {
 }
 
 const Component = (props: Props) => {
-  const mapContainer = useRef(null)
   const [initialState, setInitialState] = useState<ViewStateProps | undefined>(undefined)
   const [layers, setLayers] = useState<any[]>([])
+  const [allLineData, setAllLineData] = useState<DrawLineItem[]>([])
 
   const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
-
-  useEffect(() => {
-    if (!mapContainer.current) {
-      return
-    }
-  }, [])
 
   useEffect(() => {
     setInitialState({
@@ -43,8 +37,23 @@ const Component = (props: Props) => {
   }, [props.currentCity])
 
   useEffect(() => {
-    loadData(props.currentCity.id)
-  }, [props.mapStyle])
+    const layer = new PathLayer({
+      id: 'allLineLayer',
+      data: allLineData,
+      pickable: true,
+      autoHighlight: true,
+      widthScale: 10,
+      widthMinPixels: 1,
+      widthMaxPixels: 3,
+      jointRounded: true,
+      getPath: d => d.path,
+      getColor: props.mapStyle.foreground,
+      getWidth: 10,
+    })
+
+    setLayers([layer])
+    console.log('set layer')
+  }, [props.mapStyle, allLineData])
 
   const decryptText = (encryptedText: string): string => {
     let newTextArr = encryptedText.split('').reverse()
@@ -53,7 +62,7 @@ const Component = (props: Props) => {
       return String.fromCharCode(charCode - 1)
     })
     const newText = newTextArr.join('')
-    const decodedText = atob(newText)
+    const decodedText = decodeURIComponent(escape(window.atob(newText)))
     return decodedText
   }
 
@@ -77,15 +86,20 @@ const Component = (props: Props) => {
     const data_line = await ky.get(url).text()
     const parsed = parseLineData(data_line)
     if (parsed) {
-      const totalPath = []
+      const totalPath: DrawLineItem[] = []
       for (let i = 0; i < parsed.length; i++) {
         const line_str = parsed[i]
         const points = line_str.split(';').map(p => p.split(','))
+        let lineName = ''
         let last_blng = 0
         let last_blat = 0
         let currentPath: [number, number][] = []
         for (let j = 0; j < points.length; j++) {
           const point = points[j]
+          if (j == 0 && point.length == 1) {
+            lineName = point[0]
+            continue
+          }
           const blng = parseInt(point[0]) + last_blng
           const blat = parseInt(point[1]) + last_blat
           last_blng = blng
@@ -101,26 +115,12 @@ const Component = (props: Props) => {
           }
         }
         totalPath.push({
+          name: lineName,
           path: currentPath,
-          name: line_str,
         })
       }
 
-      const layer = new PathLayer({
-        id: 'path-layer',
-        data: totalPath,
-        pickable: true,
-        autoHighlight: true,
-        widthScale: 10,
-        widthMinPixels: 1.2,
-        widthMaxPixels: 2.4,
-        jointRounded: true,
-        getPath: d => d.path,
-        getColor: props.mapStyle.foreground,
-        getWidth: 5,
-      })
-
-      setLayers([layer])
+      setAllLineData(totalPath)
       props.setLoading(false)
     }
   }
@@ -131,6 +131,12 @@ const Component = (props: Props) => {
         initialViewState={initialState}
         controller={true}
         layers={layers}
+        getTooltip={object => {
+          if (!object || !object.object) {
+            return null
+          }
+          return object.object.name
+        }}
       >
         <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle={props.mapStyle.styleUrl} />
       </DeckGL>
