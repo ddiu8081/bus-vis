@@ -21,4 +21,20 @@ const cityList : CityList = {
   },
 }
 
-export default cityList
+const mapStyleList : MapStyleList = {
+  light: {
+    id: 'light',
+    styleUrl: 'mapbox://styles/mapbox/light-v10',
+    foreground: [60, 10, 10, 25],
+  },
+  dark: {
+    id: 'dark',
+    styleUrl: 'mapbox://styles/mapbox/dark-v10',
+    foreground: [238, 161, 7, 25],
+  },
+}
+
+export default {
+  cityList,
+  mapStyleList,
+}

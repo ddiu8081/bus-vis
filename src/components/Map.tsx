@@ -13,6 +13,7 @@ import { PathLayer } from '@deck.gl/layers'
 export interface Props {
   setLoading: (loading: boolean) => void
   currentCity: CityItem
+  mapStyle: MapStyleItem
 }
 
 const Component = (props: Props) => {
@@ -40,6 +41,10 @@ const Component = (props: Props) => {
     })
     loadData(props.currentCity.id)
   }, [props.currentCity])
+
+  useEffect(() => {
+    loadData(props.currentCity.id)
+  }, [props.mapStyle])
 
   const decryptText = (encryptedText: string): string => {
     let newTextArr = encryptedText.split('').reverse()
@@ -105,12 +110,13 @@ const Component = (props: Props) => {
         id: 'path-layer',
         data: totalPath,
         pickable: true,
+        autoHighlight: true,
         widthScale: 10,
         widthMinPixels: 1.2,
         widthMaxPixels: 2.4,
         jointRounded: true,
         getPath: d => d.path,
-        getColor: [60, 10, 10, 15],
+        getColor: props.mapStyle.foreground,
         getWidth: 5,
       })
 
@@ -126,7 +132,7 @@ const Component = (props: Props) => {
         controller={true}
         layers={layers}
       >
-        <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
+        <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle={props.mapStyle.styleUrl} />
       </DeckGL>
     </div>
   )
