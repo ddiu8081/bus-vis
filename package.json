@@ -16,7 +16,8 @@
     "mapbox-gl": "^2.7.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-map-gl": "^6.1.19"
+    "react-map-gl": "^6.1.19",
+    "react-use": "^17.3.2"
   },
   "devDependencies": {
     "@iconify/react": "^3.1.3",

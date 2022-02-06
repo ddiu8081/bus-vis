@@ -22,3 +22,14 @@ interface DrawLineItem {
   name: string
   path: [number, number][]
 }
+
+interface searchResult {
+  line_result: {
+    id: string
+    name: string
+  }[]
+  stop_result: {
+    id: string
+    name: string
+  }[]
+}
