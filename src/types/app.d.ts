@@ -19,11 +19,12 @@ interface MapStyleList {
 }
 
 interface DrawLineItem {
+  id: string
   name: string
   path: [number, number][]
 }
 
-interface searchResult {
+interface SearchResult {
   line_result: {
     id: string
     name: string
@@ -32,4 +33,28 @@ interface searchResult {
     id: string
     name: string
   }[]
+}
+
+interface RequestResult<T> {
+  code: number
+  data: T
+}
+
+interface HightlightQueryItem {
+  type: 'line' | 'stop'
+  id: string
+}
+
+interface StopData {
+  name: string
+  location: [number, number]
+  cityname: string
+  adname: string
+  lines: string
+  lines_detail: DrawLineItem[]
+}
+
+interface HightlightItem {
+  type: 'line' | 'stop'
+  stop_data?: StopData
 }

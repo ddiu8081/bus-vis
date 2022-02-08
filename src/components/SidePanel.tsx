@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { Icon } from '@iconify/react'
+import { useRecoilValue } from 'recoil'
 
+import store from '../stores/App.store'
 import SearchCard from './SearchCard'
+import StopDetailCard from './StopDetailCard'
+
 
 export interface Props {
   currentCityId: string
@@ -11,6 +15,7 @@ export interface Props {
 
 const Component = (props: Props) => {
   const [searchText, setSearchText] = useState('')
+  const currentHighlightQuery = useRecoilValue(store.currentHighlightQuery)
 
   useEffect(() => {})
 
@@ -53,6 +58,7 @@ const Component = (props: Props) => {
         </div>
       </div>
       <SearchCard currentCityId={props.currentCityId} searchText={searchText} />
+      {currentHighlightQuery?.type == 'stop' && <StopDetailCard queryId={currentHighlightQuery.id} />}
     </div>
   )
 }

@@ -93,14 +93,16 @@ const Component = (props: Props) => {
       for (let i = 0; i < parsed.length; i++) {
         const line_str = parsed[i]
         const points = line_str.split(';').map(p => p.split(','))
+        let lineId = ''
         let lineName = ''
         let last_blng = 0
         let last_blat = 0
         let currentPath: [number, number][] = []
         for (let j = 0; j < points.length; j++) {
           const point = points[j]
-          if (j == 0 && point.length == 1) {
-            lineName = point[0]
+          if (j == 0 && point.length === 2) {
+            lineId = point[0]
+            lineName = point[1]
             continue
           }
           const blng = parseInt(point[0]) + last_blng
@@ -118,11 +120,11 @@ const Component = (props: Props) => {
           }
         }
         totalPath.push({
+          id: lineId,
           name: lineName,
           path: currentPath,
         })
       }
-
       setAllLineData(totalPath)
       props.setLoading(false)
     }
