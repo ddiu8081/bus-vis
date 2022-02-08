@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Icon } from '@iconify/react'
-import { useDebounce } from 'react-use'
-import { useRecoilState, useResetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import store from '../stores/App.store'
 import { getStopDeatilById } from '../api'
@@ -11,19 +10,18 @@ export interface Props {
 }
 
 const Component = (props: Props) => {
-  const [currentHightlight, setCurrentHightlight] = useRecoilState(
+  const [currentHighlight, setCurrentHighlight] = useRecoilState(
     store.currentHighlight
   )
-  const [searchResult, setSearchResult] = useState<SearchResult>({
-    line_result: [],
-    stop_result: [],
-  })
+  const setCurrentHighlightQuery = useSetRecoilState(
+    store.currentHighlightQuery
+  )
   const [isSearching, setIsSearching] = useState(true)
 
   const getAndRenderData = async (poi_id: string) => {
     const result = await getStopDeatilById(poi_id)
     if (result) {
-      setCurrentHightlight({
+      setCurrentHighlight({
         type: 'stop',
         stop_data: result,
       })
@@ -37,6 +35,11 @@ const Component = (props: Props) => {
       getAndRenderData(props.queryId)
     }
   }, [props.queryId])
+
+  const handleClearHighlight = () => {
+    setCurrentHighlight(null)
+    setCurrentHighlightQuery(null)
+  }
 
   const infoText = isSearching ? '搜索中...' : '没有找到相关结果'
 
@@ -57,23 +60,31 @@ const Component = (props: Props) => {
       <main className="py-2 text-gray-700 dark:text-gray-200">
         <h3 className="px-4 py-1.5 text-sm font-medium opacity-50">途径线路</h3>
         <div className="max-h-72 overflow-y-auto">
-          {stopData.lines_detail && stopData.lines_detail.map(line => (
-            <div
-              key={line.id}
-              className="flex items-center px-4 py-1.5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-600 cursor-pointer"
-            >
-              <span className="text-sm">{line.name}</span>
-            </div>
-          ))}
+          {stopData.lines_detail &&
+            stopData.lines_detail.map(line => (
+              <div
+                key={line.id}
+                className="flex items-center px-4 py-1.5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-600 cursor-pointer"
+              >
+                <span className="text-sm">{line.name}</span>
+              </div>
+            ))}
         </div>
       </main>
     </div>
   )
 
   return (
-    <div className="w-72 mt-2 bg-white rounded-lg shadow-sm dark:bg-stone-700">
-      {!currentHightlight && infoDom}
-      {currentHightlight?.stop_data && detailDom(currentHightlight.stop_data)}
+    <div className="relative w-72 mt-2 bg-white rounded-lg shadow-sm dark:bg-stone-700">
+      <button
+        type="button"
+        onClick={handleClearHighlight}
+        className="absolute top-2 right-2 p-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg"
+      >
+        <Icon icon="gg:close" className="w-5 h-5" />
+      </button>
+      {!currentHighlight && infoDom}
+      {currentHighlight?.stop_data && detailDom(currentHighlight.stop_data)}
     </div>
   )
 }

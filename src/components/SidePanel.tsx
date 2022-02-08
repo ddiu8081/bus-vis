@@ -57,7 +57,7 @@ const Component = (props: Props) => {
           />
         </div>
       </div>
-      <SearchCard currentCityId={props.currentCityId} searchText={searchText} />
+      {searchText && <SearchCard currentCityId={props.currentCityId} searchText={searchText} setSearchText={setSearchText} />}
       {currentHighlightQuery?.type == 'stop' && <StopDetailCard queryId={currentHighlightQuery.id} />}
     </div>
   )
