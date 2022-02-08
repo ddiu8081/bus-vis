@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Icon } from '@iconify/react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useRecoilState } from 'recoil'
 
 import store from '../stores/App.store'
 import SearchCard from './SearchCard'
@@ -9,20 +9,18 @@ import StopDetailCard from './StopDetailCard'
 
 export interface Props {
   currentCityId: string
-  mapStyleId: string
-  setMapStyleId: (mapStyleId: string) => void
 }
 
 const Component = (props: Props) => {
+  const [globalStyle, setGlobalStyle] = useRecoilState(store.globalStyle)
   const [searchText, setSearchText] = useState('')
   const currentHighlightQuery = useRecoilValue(store.currentHighlightQuery)
 
   useEffect(() => {})
 
   const handleToggleMapStyle = () => {
-    const shouldSwitchMapStyleId =
-      props.mapStyleId === 'light' ? 'dark' : 'light'
-    props.setMapStyleId(shouldSwitchMapStyleId)
+    const shouldSwitchMapStyleId = globalStyle === 'light' ? 'dark' : 'light'
+    setGlobalStyle(shouldSwitchMapStyleId)
     document.documentElement.className = shouldSwitchMapStyleId
   }
 
@@ -38,7 +36,7 @@ const Component = (props: Props) => {
           onClick={handleToggleMapStyle}
           className="p-2.5 mr-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg"
         >
-          {props.mapStyleId == 'light' ? (
+          {globalStyle == 'light' ? (
             <Icon icon="ri:sun-fill" className="w-5 h-5" />
           ) : (
             <Icon icon="ri:moon-fill" className="w-5 h-5" />

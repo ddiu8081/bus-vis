@@ -4,7 +4,7 @@ import { useDebounce } from 'react-use'
 import { useSetRecoilState } from 'recoil'
 
 import store from '../stores/App.store'
-import { searchByKeyword } from '../api'
+import { searchByKeyword } from '../interactors/api'
 
 export interface Props {
   currentCityId: string

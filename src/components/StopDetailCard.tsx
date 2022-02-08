@@ -3,7 +3,7 @@ import { Icon } from '@iconify/react'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import store from '../stores/App.store'
-import { getStopDeatilById } from '../api'
+import { getStopDeatilById } from '../interactors/api'
 
 export interface Props {
   queryId: string
