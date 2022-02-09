@@ -22,6 +22,7 @@ interface DrawLineItem {
   id: string
   name: string
   path: [number, number][]
+  polyline_min?: string
 }
 
 interface SearchResult {
@@ -48,9 +49,7 @@ interface HightlightQueryItem {
 interface StopData {
   name: string
   location: [number, number]
-  cityname: string
-  adname: string
-  lines: string
+  address: string
   lines_detail: DrawLineItem[]
 }
 
