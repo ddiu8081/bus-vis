@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react'
-import ky from 'ky'
-import gcoord from 'gcoord'
 import { useRecoilValue } from 'recoil'
 import { StaticMap } from 'react-map-gl'
 
@@ -12,6 +10,7 @@ import { PathLayer } from '@deck.gl/layers'
 import store from '../stores/App.store'
 import dataSet from '../data/dataList'
 import { generateViewStateOptions, getAndParseData } from '../interactors/mapUtil'
+import { layer_allLine } from '../interactors/mapLayers'
 import Tooltip from './Tooltip'
 
 export interface Props {
@@ -35,26 +34,17 @@ const Component = (props: Props) => {
 
   useEffect(() => {
     if (currentHighlight?.stop_data) {
-      setInitialState(generateViewStateOptions(currentHighlight?.stop_data.location, 14, 2000)) 
+      setInitialState(generateViewStateOptions(currentHighlight?.stop_data.location, 14, 1000)) 
     } else {
-      setInitialState(generateViewStateOptions(props.currentCity.location, 9, 2000))
+      setInitialState(generateViewStateOptions(props.currentCity.location, 9, 1000))
     }
   }, [currentHighlight])
 
   useEffect(() => {
-    const layer = new PathLayer({
-      id: 'allLineLayer',
+    const layer = layer_allLine({
       data: allLineData,
-      pickable: true,
-      autoHighlight: true,
-      widthScale: 10,
-      widthMinPixels: 1,
-      widthMaxPixels: 3,
-      jointRounded: true,
-      getPath: d => d.path,
-      getColor: dataSet.mapStyleList[globalStyle].foreground,
-      getWidth: 10,
-      onHover: d => setHoverPickInfo(d)
+      foreground: dataSet.mapStyleList[globalStyle].foreground, 
+      onHover: d => setHoverPickInfo(d),
     })
 
     setMapLayers([layer])

@@ -5,7 +5,7 @@ import { useRecoilValue, useRecoilState } from 'recoil'
 import store from '../stores/App.store'
 import SearchCard from './SearchCard'
 import StopDetailCard from './StopDetailCard'
-
+import LineDetailCard from './LineDetailCard'
 
 export interface Props {
   currentCityId: string
@@ -57,6 +57,7 @@ const Component = (props: Props) => {
       </div>
       {searchText && <SearchCard currentCityId={props.currentCityId} searchText={searchText} setSearchText={setSearchText} />}
       {currentHighlightQuery?.type == 'stop' && <StopDetailCard queryId={currentHighlightQuery.id} />}
+      {currentHighlightQuery?.type == 'line' && <LineDetailCard queryId={currentHighlightQuery.id} />}
     </div>
   )
 }

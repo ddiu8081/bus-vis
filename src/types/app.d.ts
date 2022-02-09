@@ -53,7 +53,27 @@ interface StopData {
   lines_detail: DrawLineItem[]
 }
 
+interface LineStopData {
+  id: string
+  name: string
+  location: [number, number]
+}
+
+interface LineData {
+  name: string
+  polyline_min?: string
+  start_stop: string
+  end_stop: string
+  loop: boolean
+  status: boolean
+  direc: string
+  distance: number
+  busstops: LineStopData[]
+  updated_at: number
+}
+
 interface HightlightItem {
   type: 'line' | 'stop'
   stop_data?: StopData
+  line_data?: LineData
 }

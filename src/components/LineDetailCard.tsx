@@ -3,7 +3,7 @@ import { Icon } from '@iconify/react'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import store from '../stores/App.store'
-import { getStopDeatilById } from '../interactors/api'
+import { getLineDeatilById } from '../interactors/api'
 
 export interface Props {
   queryId: string
@@ -19,11 +19,11 @@ const Component = (props: Props) => {
   const [isSearching, setIsSearching] = useState(true)
 
   const getAndRenderData = async (poi_id: string) => {
-    const result = await getStopDeatilById(poi_id)
+    const result = await getLineDeatilById(poi_id)
     if (result) {
       setCurrentHighlight({
-        type: 'stop',
-        stop_data: result,
+        type: 'line',
+        line_data: result,
       })
     }
     setIsSearching(false)
@@ -41,10 +41,10 @@ const Component = (props: Props) => {
     setCurrentHighlightQuery(null)
   }
 
-  const handleClickLineItem = (id: string) => {
+  const handleClickStopItem = (id: string) => {
     setCurrentHighlight(null)
     setCurrentHighlightQuery({
-      type: 'line',
+      type: 'stop',
       id: id,
     })
   }
@@ -57,25 +57,25 @@ const Component = (props: Props) => {
     </div>
   )
 
-  const detailDom = (stopData: StopData) => (
+  const detailDom = (lineData: LineData) => (
     <div className="flex flex-col">
       <header className="px-4 py-3 text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-white/10">
-        <h2 className="text-lg font-medium">{stopData.name}</h2>
+        <h2 className="text-lg font-medium">{lineData.name}</h2>
         <span className="opacity-50 text-sm">
-          {stopData.address}
+          {lineData.distance} km
         </span>
       </header>
       <main className="py-2 text-gray-700 dark:text-gray-200">
-        <h3 className="px-4 py-1.5 text-sm font-medium opacity-50">途径线路</h3>
+        <h3 className="px-4 py-1.5 text-sm font-medium opacity-50">途径站点</h3>
         <div className="max-h-72 overflow-y-auto">
-          {stopData.lines_detail &&
-            stopData.lines_detail.map(line => (
+          {lineData.busstops &&
+            lineData.busstops.map(lineStop => (
               <div
-                key={line.id}
-                onClick={() => handleClickLineItem(line.id)}
+                key={lineStop.id}
+                onClick={() => handleClickStopItem(lineStop.id)}
                 className="flex items-center px-4 py-1.5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-600 cursor-pointer"
               >
-                <span className="text-sm">{line.name}</span>
+                <span className="text-sm">{lineStop.name}</span>
               </div>
             ))}
         </div>
@@ -93,7 +93,7 @@ const Component = (props: Props) => {
         <Icon icon="gg:close" className="w-5 h-5" />
       </button>
       {!currentHighlight && infoDom}
-      {currentHighlight?.stop_data && detailDom(currentHighlight.stop_data)}
+      {currentHighlight?.line_data && detailDom(currentHighlight.line_data)}
     </div>
   )
 }

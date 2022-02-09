@@ -12,7 +12,19 @@ const searchByKeyword = async (city: string, name: string): Promise<SearchResult
 }
 
 const getStopDeatilById = async (id: string): Promise<StopData | null> => {
-  const result: RequestResult<StopData> =  await api.get(`detail/stop`, {
+  const result: RequestResult<StopData> = await api.get(`detail/stop`, {
+    searchParams: {
+      id: id,
+    }
+  }).json()
+  if (result.code === 1) {
+    return result.data
+  }
+  return null
+}
+
+const getLineDeatilById = async (id: string): Promise<LineData | null> => {
+  const result: RequestResult<LineData> = await api.get(`detail/line`, {
     searchParams: {
       id: id,
     }
@@ -26,4 +38,5 @@ const getStopDeatilById = async (id: string): Promise<StopData | null> => {
 export {
   searchByKeyword,
   getStopDeatilById,
+  getLineDeatilById,
 }
