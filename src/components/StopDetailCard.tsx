@@ -4,6 +4,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import store from '../stores/App.store'
 import { getStopDeatilById } from '../interactors/api'
+import { decodeMinifyLineData } from '../interactors/mapUtil'
 
 export interface Props {
   queryId: string
@@ -20,10 +21,21 @@ const Component = (props: Props) => {
 
   const getAndRenderData = async (poi_id: string) => {
     const result = await getStopDeatilById(poi_id)
+    const newResult = {}
     if (result) {
+      // Generate full path of stoplines
+      const fullLineData = result.lines_detail.map(line => {
+        return {
+          ...line,
+          path: decodeMinifyLineData(line.polyline_min),
+        }
+      })
       setCurrentHighlight({
         type: 'stop',
-        stop_data: result,
+        stop_data: {
+          ...result,
+          lines_detail: fullLineData,
+        },
       })
     }
     setIsSearching(false)

@@ -4,10 +4,19 @@ import md5 from 'js-md5'
 import ky from 'ky'
 import gcoord from 'gcoord'
 
-const generateViewStateOptions = (location: [number, number], zoom: number, duration: number = 3000): ViewStateProps => {
+const convertLocation = (location: [number, number]): [number, number] => {
+  return gcoord.transform(location, gcoord.GCJ02, gcoord.WGS84)
+}
+
+const generateViewStateOptions = (
+  location: [number, number],
+  zoom: number,
+  duration: number = 3000
+): ViewStateProps => {
+  const mapBoxLocation = convertLocation(location)
   return {
-    longitude: location[0],
-    latitude: location[1],
+    longitude: mapBoxLocation[0],
+    latitude: mapBoxLocation[1],
     zoom: zoom,
     pitch: 0,
     bearing: 0,
@@ -39,6 +48,33 @@ const p_parseLineData = (lineData: string): string[] => {
   return lineDataArr
 }
 
+const decodeMinifyLineData = (minifyLineString?: string): [number, number][] => {
+  if (!minifyLineString) {
+    return []
+  }
+  const points = minifyLineString.split(';').map(p => p.split(','))
+  let last_blng = 0
+  let last_blat = 0
+  let linePath: [number, number][] = []
+  for (let j = 0; j < points.length; j++) {
+    const point = points[j]
+    const blng = parseInt(point[0]) + last_blng
+    const blat = parseInt(point[1]) + last_blat
+    last_blng = blng
+    last_blat = blat
+    if (blng && blat) {
+      linePath.push(
+        gcoord.transform(
+          [blng / 1000000, blat / 1000000],
+          gcoord.GCJ02,
+          gcoord.WGS84
+        )
+      )
+    }
+  }
+  return linePath
+}
+
 const getAndParseData = async (cityId: string) => {
   const requestPath = `/data/line/${cityId}.data`
   const requestSecret = import.meta.env.VITE_CDN_VERIFY_SECRET
@@ -49,33 +85,17 @@ const getAndParseData = async (cityId: string) => {
     const totalPath: DrawLineItem[] = []
     for (let i = 0; i < parsed.length; i++) {
       const line_str = parsed[i]
-      const points = line_str.split(';').map(p => p.split(','))
       let lineId = ''
       let lineName = ''
-      let last_blng = 0
-      let last_blat = 0
-      let currentPath: [number, number][] = []
-      for (let j = 0; j < points.length; j++) {
-        const point = points[j]
-        if (j == 0 && point.length === 2) {
-          lineId = point[0]
-          lineName = point[1]
-          continue
-        }
-        const blng = parseInt(point[0]) + last_blng
-        const blat = parseInt(point[1]) + last_blat
-        last_blng = blng
-        last_blat = blat
-        if (blng && blat) {
-          currentPath.push(
-            gcoord.transform(
-              [blng / 1000000, blat / 1000000],
-              gcoord.GCJ02,
-              gcoord.WGS84
-            )
-          )
-        }
+      let minifyLineStr = line_str
+      const lineInfoArr = line_str.split('@')
+      if (lineInfoArr.length > 1) {
+        const meta = lineInfoArr[0].split(',')
+        lineId = meta[0]
+        lineName = meta[1]
+        minifyLineStr = lineInfoArr[1]
       }
+      const currentPath = decodeMinifyLineData(minifyLineStr)
       totalPath.push({
         id: lineId,
         name: lineName,
@@ -87,7 +107,9 @@ const getAndParseData = async (cityId: string) => {
   return []
 }
 
-export {
-  generateViewStateOptions,
-  getAndParseData,
+export { 
+  convertLocation, 
+  generateViewStateOptions, 
+  decodeMinifyLineData,
+  getAndParseData
 }
