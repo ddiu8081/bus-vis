@@ -1,10 +1,9 @@
-import { PathLayer, IconLayer } from '@deck.gl/layers'
-import { CompositeLayer } from '@deck.gl/core'
-import { convertLocation } from './mapUtil'
+import { PathLayer } from '@deck.gl/layers'
 import type { RGBAColor, LayerInputHandler } from 'deck.gl'
+
 import SingleStopViewLayer from './layers/SingleStopViewLayer'
 
-interface Props_AllLine {
+export interface Props_AllLine {
   visible: boolean
   data: DrawLineItem[]
   foreground: RGBAColor
@@ -29,9 +28,9 @@ const gen_layer_allLine = (props: Props_AllLine) => {
   })
 }
 
-interface Props_StopDetail {
+export interface Props_StopDetail {
   visible: boolean
-  data: StopData
+  data: StopData | undefined
   foreground: RGBAColor
 }
 
@@ -44,17 +43,7 @@ const gen_layer_stopDetail = (props: Props_StopDetail) => {
   })
 }
 
-export interface Props_AllLayerConf {
-  allLine: Props_AllLine
-  stopDetail: Props_StopDetail
-}
-
-const layerConf = (props: Props_AllLayerConf) => {
-  const allLineLayer = gen_layer_allLine(props.allLine)
-  const stopDetailLayer = gen_layer_stopDetail(props.stopDetail)
-  return [allLineLayer, stopDetailLayer]
-}
-
 export {
-  layerConf,
+  gen_layer_allLine,
+  gen_layer_stopDetail,
 }

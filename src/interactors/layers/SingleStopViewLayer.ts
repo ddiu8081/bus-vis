@@ -5,7 +5,7 @@ import { convertLocation } from '../mapUtil'
 interface SingleStopViewLayerProps {
   id: string
   visible: boolean
-  data: StopData
+  data: StopData | undefined
 }
 
 class SingleStopViewLayer extends CompositeLayer<StopData, SingleStopViewLayerProps> {
@@ -16,7 +16,7 @@ class SingleStopViewLayer extends CompositeLayer<StopData, SingleStopViewLayerPr
     return [
       new IconLayer<StopData>({
         id: `${this.props.id}-stop-icon`,
-        data: [this.props.data],
+        data: this.props.data ? [this.props.data] : [],
         pickable: false,
         iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
         iconMapping: ICON_MAPPING,
@@ -27,7 +27,7 @@ class SingleStopViewLayer extends CompositeLayer<StopData, SingleStopViewLayerPr
       }),
       new PathLayer<DrawLineItem>({
         id: `${this.props.id}-stop-lines`,
-        data: this.props.data.lines_detail,
+        data: this.props.data ? this.props.data.lines_detail: [],
         pickable: false,
         autoHighlight: false,
         widthScale: 15,

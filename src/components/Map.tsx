@@ -8,8 +8,8 @@ import { ViewStateProps } from '@deck.gl/core/lib/deck'
 
 import store from '../stores/App.store'
 import dataSet from '../data/dataList'
-import { generateViewStateOptions, getAndParseData, decodeMinifyLineData } from '../interactors/mapUtil'
-import { layerConf } from '../interactors/mapLayers'
+import useMapLayers from '../hooks/useMapLayers'
+import { generateViewStateOptions, getAndParseData } from '../interactors/mapUtil'
 import Tooltip from './Tooltip'
 
 export interface Props {
@@ -20,8 +20,8 @@ export interface Props {
 const Component = (props: Props) => {
   const currentHighlight = useRecoilValue(store.currentHighlight)
   const globalStyle = useRecoilValue(store.globalStyle)
+  const [mapLayers, updateLayerSetting] = useMapLayers()
   const [initialState, setInitialState] = useState<ViewStateProps | undefined>(undefined)
-  const [mapLayers, setMapLayers] = useState<any[]>([])
   const [allLineData, setAllLineData] = useState<DrawLineItem[]>([])
   const [hoverPickInfo, setHoverPickInfo] = useState<PickInfo<DrawLineItem> | null>(null)
   const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
@@ -33,66 +33,51 @@ const Component = (props: Props) => {
 
   useEffect(() => {
     if (currentHighlight?.stop_data) {
-      setInitialState(generateViewStateOptions(currentHighlight?.stop_data.location, 14, 1000)) 
-      const config1 = {
-        visible: false,
-        data: allLineData,
-        foreground: dataSet.mapStyleList[globalStyle].foreground, 
-        onHover: (d: PickInfo<DrawLineItem>) => setHoverPickInfo(d),
-      }
-
-      const config2 = {
-        visible: true,
-        data: currentHighlight.stop_data,
-        foreground: dataSet.mapStyleList[globalStyle].foreground,
-      }
-  
-      setMapLayers(layerConf({
-        allLine: config1,
-        stopDetail: config2,
-      }))
+      setInitialState(generateViewStateOptions(currentHighlight?.stop_data.location, 14, 1000))
+      updateLayerSetting({
+        allLine: {
+          visible: false,
+        },
+        stopDetail: {
+          visible: true,
+          data: currentHighlight.stop_data,
+          foreground: dataSet.mapStyleList[globalStyle].foreground,
+        }
+      })
     } else {
-      const config1 = {
-        visible: false,
-        data: allLineData,
-        foreground: dataSet.mapStyleList[globalStyle].foreground, 
-        onHover: (d: PickInfo<DrawLineItem>) => setHoverPickInfo(d),
-      }
-
-      const config2 = {
-        visible: false,
-        data: null,
-        foreground: dataSet.mapStyleList[globalStyle].foreground,
-        data2: allLineData,
-      }
-  
-      // setMapLayers(layerConf({
-      //   allLine: config1,
-      //   stopDetail: config2,
-      // }))
+      updateLayerSetting({
+        allLine: {
+          visible: true,
+        },
+        stopDetail: {
+          visible: false,
+        }
+      })
       setInitialState(generateViewStateOptions(props.currentCity.location, 9, 1000))
     }
   }, [currentHighlight])
 
   useEffect(() => {
-    const config1 = {
-      visible: false,
-      data: allLineData,
-      foreground: dataSet.mapStyleList[globalStyle].foreground, 
-      onHover: (d: PickInfo<DrawLineItem>) => setHoverPickInfo(d),
-    }
+    updateLayerSetting({
+      allLine: {
+        foreground: dataSet.mapStyleList[globalStyle].foreground, 
+      },
+      stopDetail: {
+        foreground: dataSet.mapStyleList[globalStyle].foreground,
+      }
+    })
+  }, [globalStyle])
 
-    const config2 = {
-      visible: false,
-      data: null,
-      foreground: dataSet.mapStyleList[globalStyle].foreground,
-    }
-
-    // setMapLayers(layerConf({
-    //   allLine: config1,
-    //   stopDetail: config2,
-    // }))
-  }, [globalStyle, allLineData])
+  useEffect(() => {
+    updateLayerSetting({
+      allLine: {
+        visible: true,
+        data: allLineData,
+        foreground: dataSet.mapStyleList[globalStyle].foreground, 
+        onHover: (d: PickInfo<DrawLineItem>) => setHoverPickInfo(d),
+      },
+    })
+  }, [allLineData])
 
   const loadData = async (cityId: string) => {
     props.setLoading(true)
