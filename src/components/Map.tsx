@@ -42,7 +42,22 @@ const Component = (props: Props) => {
           visible: true,
           data: currentHighlight.stop_data,
           foreground: dataSet.mapStyleList[globalStyle].foreground,
-        }
+        },
+      })
+    } else if (currentHighlight?.line_data) {
+      setInitialState(generateViewStateOptions(props.currentCity.location, 12, 1000))
+      updateLayerSetting({
+        allLine: {
+          visible: false,
+        },
+        stopDetail: {
+          visible: false,
+        },
+        lineDetail: {
+          visible: true,
+          data: currentHighlight.line_data,
+          foreground: dataSet.mapStyleList[globalStyle].foreground,
+        },
       })
     } else {
       updateLayerSetting({
@@ -51,7 +66,10 @@ const Component = (props: Props) => {
         },
         stopDetail: {
           visible: false,
-        }
+        },
+        lineDetail: {
+          visible: false,
+        },
       })
       setInitialState(generateViewStateOptions(props.currentCity.location, 9, 1000))
     }
@@ -64,7 +82,10 @@ const Component = (props: Props) => {
       },
       stopDetail: {
         foreground: dataSet.mapStyleList[globalStyle].foreground,
-      }
+      },
+      lineDetail: {
+        foreground: dataSet.mapStyleList[globalStyle].foreground,
+      },
     })
   }, [globalStyle])
 

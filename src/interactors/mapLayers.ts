@@ -2,6 +2,7 @@ import { PathLayer } from '@deck.gl/layers'
 import type { RGBAColor, LayerInputHandler } from 'deck.gl'
 
 import SingleStopViewLayer from './layers/SingleStopViewLayer'
+import SingleLineViewLayer from './layers/SingleLineViewLayer'
 
 export interface Props_AllLine {
   visible: boolean
@@ -43,7 +44,23 @@ const gen_layer_stopDetail = (props: Props_StopDetail) => {
   })
 }
 
+export interface Props_LineDetail {
+  visible: boolean
+  data: LineData | undefined
+  foreground: RGBAColor
+}
+
+const gen_layer_lineDetail = (props: Props_LineDetail) => {
+
+  return new SingleLineViewLayer({
+    id: 'line-detail',
+    visible: props.visible,
+    data: props.data,
+  })
+}
+
 export {
   gen_layer_allLine,
   gen_layer_stopDetail,
+  gen_layer_lineDetail,
 }

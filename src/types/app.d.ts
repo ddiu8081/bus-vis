@@ -61,6 +61,7 @@ interface LineStopData {
 
 interface LineData {
   name: string
+  path: [number, number][]
   polyline_min?: string
   start_stop: string
   end_stop: string

@@ -4,7 +4,7 @@ import md5 from 'js-md5'
 import ky from 'ky'
 import gcoord from 'gcoord'
 
-const convertLocation = (location: [number, number]): [number, number] => {
+const convertLocation = (location: [number, number] = [0, 0]): [number, number] => {
   return gcoord.transform(location, gcoord.GCJ02, gcoord.WGS84)
 }
 
@@ -64,11 +64,7 @@ const decodeMinifyLineData = (minifyLineString?: string): [number, number][] => 
     last_blat = blat
     if (blng && blat) {
       linePath.push(
-        gcoord.transform(
-          [blng / 1000000, blat / 1000000],
-          gcoord.GCJ02,
-          gcoord.WGS84
-        )
+        convertLocation([blng / 1000000, blat / 1000000])
       )
     }
   }

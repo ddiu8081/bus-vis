@@ -37,7 +37,7 @@ class SingleStopViewLayer extends CompositeLayer<StopData, SingleStopViewLayerPr
         getPath: d => d.path,
         getColor: [60, 10, 10, 100],
         getWidth: 10,
-      })
+      }),
     ];
   }
 }

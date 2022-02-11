@@ -21,7 +21,6 @@ const Component = (props: Props) => {
 
   const getAndRenderData = async (poi_id: string) => {
     const result = await getStopDeatilById(poi_id)
-    const newResult = {}
     if (result) {
       // Generate full path of stoplines
       const fullLineData = result.lines_detail.map(line => {

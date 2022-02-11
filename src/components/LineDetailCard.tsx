@@ -4,6 +4,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import store from '../stores/App.store'
 import { getLineDeatilById } from '../interactors/api'
+import { decodeMinifyLineData } from '../interactors/mapUtil'
 
 export interface Props {
   queryId: string
@@ -21,9 +22,16 @@ const Component = (props: Props) => {
   const getAndRenderData = async (poi_id: string) => {
     const result = await getLineDeatilById(poi_id)
     if (result) {
+      let fullLinePath: [number, number][] = []
+      if (result.polyline_min) {
+        fullLinePath = decodeMinifyLineData(result.polyline_min)
+      }
       setCurrentHighlight({
         type: 'line',
-        line_data: result,
+        line_data: {
+          ...result,
+          path: fullLinePath,
+        },
       })
     }
     setIsSearching(false)

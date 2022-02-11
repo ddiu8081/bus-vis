@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { gen_layer_allLine, gen_layer_stopDetail } from '../interactors/mapLayers'
-import type { Props_AllLine, Props_StopDetail } from '../interactors/mapLayers'
+import { gen_layer_allLine, gen_layer_stopDetail, gen_layer_lineDetail } from '../interactors/mapLayers'
+import type { Props_AllLine, Props_StopDetail, Props_LineDetail } from '../interactors/mapLayers'
 import type { Layer } from 'deck.gl'
 
 interface UpdateLayerConf {
   allLine?: Partial<Props_AllLine>
   stopDetail?: Partial<Props_StopDetail>
+  lineDetail?: Partial<Props_LineDetail>
 }
 
 function useMapLayers(): [Layer<any>[], (props: UpdateLayerConf) => void] {
@@ -17,6 +18,11 @@ function useMapLayers(): [Layer<any>[], (props: UpdateLayerConf) => void] {
     onHover: () => {},
   })
   const [stopDetailProp, setStopDetailProp] = useState<Props_StopDetail>({
+    visible: false,
+    data: undefined,
+    foreground: [0, 0, 0, 100],
+  })
+  const [lineDetailProp, setLineDetailProp] = useState<Props_LineDetail>({
     visible: false,
     data: undefined,
     foreground: [0, 0, 0, 100],
@@ -35,13 +41,19 @@ function useMapLayers(): [Layer<any>[], (props: UpdateLayerConf) => void] {
         ...stopDetailProp,
         ...props.stopDetail,
       },
+      lineDetail: {
+        ...lineDetailProp,
+        ...props.lineDetail,
+      },
     }
     setAllLineProp(mergedProps.allLine)
     setStopDetailProp(mergedProps.stopDetail)
+    setLineDetailProp(mergedProps.lineDetail)
     // Generate new layers.
     const allLineLayer = gen_layer_allLine(mergedProps.allLine)
     const stopDetailLayer = gen_layer_stopDetail(mergedProps.stopDetail)
-    setMapLayers([allLineLayer, stopDetailLayer])
+    const lineDetailLayer = gen_layer_lineDetail(mergedProps.lineDetail)
+    setMapLayers([allLineLayer, stopDetailLayer, lineDetailLayer])
   }
 
   return [mapLayers, updateLayerSetting]
