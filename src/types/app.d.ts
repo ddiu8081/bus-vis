@@ -63,6 +63,7 @@ interface LineData {
   name: string
   path: [number, number][]
   polyline_min?: string
+  bounds: [[number, number], [number, number]]
   start_stop: string
   end_stop: string
   loop: boolean

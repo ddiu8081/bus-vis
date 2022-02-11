@@ -1,17 +1,19 @@
-import { ViewStateProps } from '@deck.gl/core/lib/deck'
 import { FlyToInterpolator } from 'deck.gl'
 import md5 from 'js-md5'
 import ky from 'ky'
 import gcoord from 'gcoord'
+import type { ViewStateProps } from '@deck.gl/core/lib/deck'
 
-const convertLocation = (location: [number, number] = [0, 0]): [number, number] => {
+const convertLocation = (
+  location: [number, number] = [0, 0]
+): [number, number] => {
   return gcoord.transform(location, gcoord.GCJ02, gcoord.WGS84)
 }
 
 const generateViewStateOptions = (
   location: [number, number],
   zoom: number,
-  duration: number = 3000
+  duration: number = 2400
 ): ViewStateProps => {
   const mapBoxLocation = convertLocation(location)
   return {
@@ -48,7 +50,9 @@ const p_parseLineData = (lineData: string): string[] => {
   return lineDataArr
 }
 
-const decodeMinifyLineData = (minifyLineString?: string): [number, number][] => {
+const decodeMinifyLineData = (
+  minifyLineString?: string
+): [number, number][] => {
   if (!minifyLineString) {
     return []
   }
@@ -63,9 +67,7 @@ const decodeMinifyLineData = (minifyLineString?: string): [number, number][] => 
     last_blng = blng
     last_blat = blat
     if (blng && blat) {
-      linePath.push(
-        convertLocation([blng / 1000000, blat / 1000000])
-      )
+      linePath.push(convertLocation([blng / 1000000, blat / 1000000]))
     }
   }
   return linePath
@@ -103,9 +105,9 @@ const getAndParseData = async (cityId: string) => {
   return []
 }
 
-export { 
-  convertLocation, 
-  generateViewStateOptions, 
+export {
+  convertLocation,
+  generateViewStateOptions,
   decodeMinifyLineData,
-  getAndParseData
+  getAndParseData,
 }
