@@ -53,7 +53,7 @@ interface StopData {
   lines_detail: DrawLineItem[]
 }
 
-interface LineStopData {
+interface DrawStopItem {
   id: string
   name: string
   location: [number, number]
@@ -70,7 +70,7 @@ interface LineData {
   status: boolean
   direc: string
   distance: number
-  busstops: LineStopData[]
+  busstops: DrawStopItem[]
   updated_at: number
 }
 

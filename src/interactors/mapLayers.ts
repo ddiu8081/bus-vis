@@ -49,7 +49,6 @@ export interface Props_LineDetail {
 }
 
 const gen_layer_lineDetail = (props: Props_LineDetail) => {
-
   return new SingleLineViewLayer({
     id: 'line-detail',
     visible: props.visible,

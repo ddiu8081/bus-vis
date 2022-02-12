@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRecoilValue } from 'recoil'
 import { StaticMap } from 'react-map-gl'
 import DeckGL from '@deck.gl/react'
@@ -117,19 +117,19 @@ const Component = (props: Props) => {
     })
   }, [allLineData])
 
-  const onHoverItem = (d: PickInfo<any>) => {
-    if (!d.object) {
+  const onHoverItem = (info: PickInfo<any>) => {
+    if (!info.object) {
       setHoverPickInfo(null)
       return
     }
-    setHoverPickInfo(d)
+    setHoverPickInfo(info)
   }
 
-  const onClickItem = (d: PickInfo<any>) => {
-    if (!d.object) {
+  const onClickItem = (info: PickInfo<any>, event: any) => {
+    if (!info.object) {
       return
     }
-    handleClickLineObject(d)
+    handleClickLineObject(info)
   }
 
   const loadData = async (cityId: string) => {
@@ -139,8 +139,7 @@ const Component = (props: Props) => {
     props.setLoading(false)
   }
 
-  const handleClickLineObject = (pickItem: PickInfo<DrawLineItem | LineStopData>) => {
-    console.log(pickItem)
+  const handleClickLineObject = (pickItem: PickInfo<DrawLineItem | DrawStopItem>) => {
     if (pickItem.object?.id) {
       const type = 'path' in pickItem.object ? 'line' : 'stop'
       setCurrentHighlightQuery({
@@ -151,7 +150,7 @@ const Component = (props: Props) => {
   }
 
   return (
-    <div className="h-full w-full relative">
+    <div onContextMenu={(evt) => evt.preventDefault()} className="h-full w-full relative">
       <DeckGL
         ref={deckRef}
         pickingRadius={4}
