@@ -3,6 +3,7 @@ import { CompositeLayer } from '@deck.gl/core'
 import type { Layer } from '@deck.gl/core'
 
 import { convertLocation } from '../mapUtil'
+import dataSet from '../../data/dataList'
 
 interface ScatterStopLayerProps {
   id: string
@@ -12,13 +13,6 @@ interface ScatterStopLayerProps {
 
 class ScatterStopLayer extends CompositeLayer<DrawStopItem, ScatterStopLayerProps> {
   renderLayers() {
-    const ICON_MAPPING = {
-      marker: {x: 0, y: 48, width: 24, height: 24},
-      marker2: {x: 0, y: 0, width: 48, height: 48},
-    }
-    const visibleZoomMap = {
-
-    }
     return [
       new ScatterplotLayer<DrawStopItem>({
         id: 'scatter_stop-low_icons',
@@ -39,9 +33,9 @@ class ScatterStopLayer extends CompositeLayer<DrawStopItem, ScatterStopLayerProp
         id: 'scatter_stop-high_icons',
         data: this.props.data,
         pickable: true,
-        iconAtlas: 'https://cloud-upyun.ddiu.site/picture/2022/02/12/2Cia9o.png',
-        iconMapping: ICON_MAPPING,
-        getIcon: d => 'marker2',
+        iconAtlas: dataSet.mapIcon.spriteUrl,
+        iconMapping: dataSet.mapIcon.iconMap,
+        getIcon: d => 'stop_md',
         sizeScale: 1,
         getPosition: d => convertLocation(d.location),
         getSize: d => 16,

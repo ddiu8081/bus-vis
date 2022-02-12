@@ -47,6 +47,7 @@ interface HightlightQueryItem {
 }
 
 interface StopData {
+  id: string
   name: string
   location: [number, number]
   address: string

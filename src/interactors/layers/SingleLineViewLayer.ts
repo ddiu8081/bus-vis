@@ -20,8 +20,6 @@ class SingleLineViewLayer extends CompositeLayer<LineData, SingleLineViewLayerPr
         widthScale: 15,
         widthMinPixels: 2,
         widthMaxPixels: 5,
-        capRounded: true,
-        jointRounded: true,
         getPath: d => d,
         getColor: [136, 111, 111],
         getWidth: 10,

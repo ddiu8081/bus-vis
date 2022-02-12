@@ -50,7 +50,6 @@ const Component = (props: Props) => {
   }
 
   const handleClickStopItem = (id: string) => {
-    setCurrentHighlight(null)
     setCurrentHighlightQuery({
       type: 'stop',
       id: id,

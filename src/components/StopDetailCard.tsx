@@ -53,7 +53,6 @@ const Component = (props: Props) => {
   }
 
   const handleClickLineItem = (id: string) => {
-    setCurrentHighlight(null)
     setCurrentHighlightQuery({
       type: 'line',
       id: id,

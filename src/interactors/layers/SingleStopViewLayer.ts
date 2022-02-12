@@ -2,6 +2,7 @@ import { PathLayer, IconLayer } from '@deck.gl/layers'
 import { CompositeLayer } from '@deck.gl/core'
 
 import { convertLocation } from '../mapUtil'
+import dataSet from '../../data/dataList'
 
 interface SingleStopViewLayerProps {
   id: string
@@ -11,33 +12,32 @@ interface SingleStopViewLayerProps {
 
 class SingleStopViewLayer extends CompositeLayer<StopData, SingleStopViewLayerProps> {
   renderLayers() {
-    const ICON_MAPPING = {
-      marker: {x: 0, y: 0, width: 128, height: 128, mask: true}
-    }
     return [
-      new IconLayer<StopData>({
-        id: `${this.props.id}-stop-icon`,
-        data: this.props.data ? [this.props.data] : [],
-        pickable: false,
-        iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
-        iconMapping: ICON_MAPPING,
-        getIcon: d => 'marker',
-        sizeScale: 15,
-        getPosition: d => convertLocation(d.location),
-        getSize: d => 5,
-      }),
       new PathLayer<DrawLineItem>({
-        id: `${this.props.id}-stop-lines`,
+        id: 'single_stop-stop_lines',
         data: this.props.data ? this.props.data.lines_detail: [],
         pickable: true,
         autoHighlight: true,
         widthScale: 15,
         widthMinPixels: 2,
-        widthMaxPixels: 5,
-        jointRounded: true,
+        widthMaxPixels: 4,
         getPath: d => d.path,
-        getColor: [60, 10, 10, 100],
+        getColor: [60, 10, 10, 50],
         getWidth: 10,
+      }),
+      new IconLayer<StopData>({
+        id: `${this.props.id}-stop-icon`,
+        data: this.props.data ? [this.props.data] : [],
+        pickable: false,
+        iconAtlas: dataSet.mapIcon.spriteUrl,
+        iconMapping: dataSet.mapIcon.iconMap,
+        getIcon: d => 'stop_lg',
+        sizeUnits: 'meters',
+        sizeMinPixels: 28,
+        sizeMaxPixels: 48,
+        sizeScale: 16,
+        getPosition: d => convertLocation(d.location),
+        getSize: d => 24,
       }),
     ]
   }

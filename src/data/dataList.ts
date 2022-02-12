@@ -34,7 +34,17 @@ const mapStyleList : MapStyleList = {
   },
 }
 
+const mapIcon = {
+  spriteUrl: 'https://cloud-upyun.ddiu.site/picture/2022/02/12/4Yae1l.png',
+  iconMap: {
+    stop_sm: {x: 0, y: 0, width: 24, height: 24},
+    stop_md: {x: 0, y: 34, width: 48, height: 48},
+    stop_lg: {x: 58, y: 34, width: 54, height: 54},
+  }
+}
+
 export default {
   cityList,
   mapStyleList,
+  mapIcon,
 }
