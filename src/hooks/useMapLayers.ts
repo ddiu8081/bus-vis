@@ -15,7 +15,6 @@ function useMapLayers(): [Layer<any>[], (props: UpdateLayerConf) => void] {
     visible: true,
     data: [],
     foreground: [0, 0, 0, 100],
-    onHover: () => {},
   })
   const [stopDetailProp, setStopDetailProp] = useState<Props_StopDetail>({
     visible: false,

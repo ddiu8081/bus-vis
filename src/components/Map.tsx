@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 import { StaticMap } from 'react-map-gl'
-
 import DeckGL from '@deck.gl/react'
+import { useSetRecoilState } from 'recoil'
 import type { PickInfo } from 'deck.gl'
 
 import store from '../stores/App.store'
@@ -18,7 +18,11 @@ export interface Props {
 }
 
 const Component = (props: Props) => {
+  const deckRef = useRef<DeckGL>(null)
   const currentHighlight = useRecoilValue(store.currentHighlight)
+  const setCurrentHighlightQuery = useSetRecoilState(
+    store.currentHighlightQuery
+  )
   const globalStyle = useRecoilValue(store.globalStyle)
   const [mapLayers, updateLayerSetting] = useMapLayers()
   const [viewport, setViewport, fitBounds] = useMapViewport()
@@ -50,6 +54,9 @@ const Component = (props: Props) => {
           data: currentHighlight.stop_data,
           foreground: dataSet.mapStyleList[globalStyle].foreground,
         },
+        lineDetail: {
+          visible: false,
+        }
       })
     } else if (currentHighlight?.line_data) {
       updateLayerSetting({
@@ -105,11 +112,25 @@ const Component = (props: Props) => {
       allLine: {
         visible: true,
         data: allLineData,
-        foreground: dataSet.mapStyleList[globalStyle].foreground, 
-        onHover: (d: PickInfo<DrawLineItem>) => setHoverPickInfo(d),
+        foreground: dataSet.mapStyleList[globalStyle].foreground,
       },
     })
   }, [allLineData])
+
+  const onHoverItem = (d: PickInfo<any>) => {
+    if (!d.object) {
+      setHoverPickInfo(null)
+      return
+    }
+    setHoverPickInfo(d)
+  }
+
+  const onClickItem = (d: PickInfo<any>) => {
+    if (!d.object) {
+      return
+    }
+    handleClickLineObject(d)
+  }
 
   const loadData = async (cityId: string) => {
     props.setLoading(true)
@@ -118,12 +139,27 @@ const Component = (props: Props) => {
     props.setLoading(false)
   }
 
+  const handleClickLineObject = (pickItem: PickInfo<DrawLineItem | LineStopData>) => {
+    console.log(pickItem)
+    if (pickItem.object?.id) {
+      const type = 'path' in pickItem.object ? 'line' : 'stop'
+      setCurrentHighlightQuery({
+        type: type,
+        id: pickItem.object.id,
+      }) 
+    }
+  }
+
   return (
     <div className="h-full w-full relative">
       <DeckGL
+        ref={deckRef}
+        pickingRadius={4}
         initialViewState={viewport}
         controller={true}
         layers={mapLayers}
+        onHover={onHoverItem}
+        onClick={onClickItem}
       >
         <Tooltip hoverPickInfo={hoverPickInfo} />
         <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle={dataSet.mapStyleList[globalStyle].styleUrl} />

@@ -8,7 +8,6 @@ export interface Props_AllLine {
   visible: boolean
   data: DrawLineItem[]
   foreground: RGBAColor
-  onHover: LayerInputHandler<DrawLineItem>
 }
 
 const gen_layer_allLine = (props: Props_AllLine) => {
@@ -25,7 +24,6 @@ const gen_layer_allLine = (props: Props_AllLine) => {
     getPath: d => d.path,
     getColor: props.foreground,
     getWidth: 10,
-    onHover: props.onHover
   })
 }
 

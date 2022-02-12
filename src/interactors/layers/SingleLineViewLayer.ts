@@ -30,7 +30,8 @@ class SingleLineViewLayer extends CompositeLayer<LineData, SingleLineViewLayerPr
       new IconLayer<LineStopData>({
         id: `${this.props.id}-stop-icon`,
         data: this.props.data ? this.props.data.busstops : [],
-        pickable: false,
+        pickable: true,
+        autoHighlight: true,
         iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
         iconMapping: ICON_MAPPING,
         getIcon: d => 'marker',
@@ -42,5 +43,9 @@ class SingleLineViewLayer extends CompositeLayer<LineData, SingleLineViewLayerPr
   }
 }
 SingleLineViewLayer.layerName = 'SingleLineViewLayer'
+SingleLineViewLayer.defaultProps = {
+  pickable: true,
+  autoHighlight: true,
+}
 
 export default SingleLineViewLayer

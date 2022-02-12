@@ -1,5 +1,7 @@
 import { PathLayer, IconLayer } from '@deck.gl/layers'
 import { CompositeLayer } from '@deck.gl/core'
+import type { LayerInputHandler } from 'deck.gl'
+
 import { convertLocation } from '../mapUtil'
 
 interface SingleStopViewLayerProps {
@@ -28,8 +30,8 @@ class SingleStopViewLayer extends CompositeLayer<StopData, SingleStopViewLayerPr
       new PathLayer<DrawLineItem>({
         id: `${this.props.id}-stop-lines`,
         data: this.props.data ? this.props.data.lines_detail: [],
-        pickable: false,
-        autoHighlight: false,
+        pickable: true,
+        autoHighlight: true,
         widthScale: 15,
         widthMinPixels: 2,
         widthMaxPixels: 5,
@@ -38,9 +40,13 @@ class SingleStopViewLayer extends CompositeLayer<StopData, SingleStopViewLayerPr
         getColor: [60, 10, 10, 100],
         getWidth: 10,
       }),
-    ];
+    ]
   }
 }
 SingleStopViewLayer.layerName = 'SingleStopViewLayer'
+SingleStopViewLayer.defaultProps = {
+  pickable: true,
+  autoHighlight: true,
+}
 
 export default SingleStopViewLayer
