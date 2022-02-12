@@ -1,6 +1,5 @@
 import { PathLayer, IconLayer } from '@deck.gl/layers'
 import { CompositeLayer } from '@deck.gl/core'
-import type { LayerInputHandler } from 'deck.gl'
 
 import { convertLocation } from '../mapUtil'
 
