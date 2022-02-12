@@ -69,7 +69,7 @@ const Component = (props: Props) => {
 
   const detailDom = (stopData: StopData) => (
     <div className="flex flex-col">
-      <header className="px-4 py-3 text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-white/10">
+      <header className="pl-4 pr-12 py-3 text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-white/10">
         <h2 className="text-lg font-medium">{stopData.name}</h2>
         <span className="opacity-50 text-sm">
           {stopData.address}

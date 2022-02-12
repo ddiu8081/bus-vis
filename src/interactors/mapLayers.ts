@@ -1,8 +1,9 @@
 import { PathLayer } from '@deck.gl/layers'
-import type { RGBAColor, LayerInputHandler } from 'deck.gl'
+import type { RGBAColor } from 'deck.gl'
 
 import SingleStopViewLayer from './layers/SingleStopViewLayer'
 import SingleLineViewLayer from './layers/SingleLineViewLayer'
+import ScatterStopLayer from './layers/ScatterStopLayer'
 
 export interface Props_AllLine {
   visible: boolean
@@ -24,6 +25,25 @@ const gen_layer_allLine = (props: Props_AllLine) => {
     getPath: d => d.path,
     getColor: props.foreground,
     getWidth: 10,
+  })
+}
+
+export interface Props_AllStop {
+  visible: boolean
+  data: DrawStopItem[]
+  foreground: RGBAColor
+}
+
+const gen_layer_allStop = (props: Props_AllStop) => {
+  return new ScatterStopLayer({
+    id: 'all-stop',
+    visible: props.visible,
+    data: props.data,
+    scatterColor: [192, 160, 128],
+    hideZoom: 5,
+    detailZoom: 13,
+    minPixels: 2,
+    showTextLayer: false
   })
 }
 
@@ -58,6 +78,7 @@ const gen_layer_lineDetail = (props: Props_LineDetail) => {
 
 export {
   gen_layer_allLine,
+  gen_layer_allStop,
   gen_layer_stopDetail,
   gen_layer_lineDetail,
 }

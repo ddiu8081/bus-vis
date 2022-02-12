@@ -25,7 +25,7 @@ class SingleLineViewLayer extends CompositeLayer<LineData, SingleLineViewLayerPr
         getWidth: 10,
       }),
       new ScatterStopLayer({
-        id: 'single_line-high_icons',
+        id: 'single_line-stops',
         visible: this.props.visible,
         data: this.props.data ? this.props.data.busstops : [],
       }),

@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 import { StaticMap } from 'react-map-gl'
 import DeckGL from '@deck.gl/react'
-import { useSetRecoilState } from 'recoil'
 import type { PickInfo } from 'deck.gl'
 
 import store from '../stores/App.store'
 import dataSet from '../data/dataList'
 import useMapLayers from '../hooks/useMapLayers'
 import useMapViewport from '../hooks/useMapViewport'
-import { getAndParseData } from '../interactors/mapUtil'
+import { getAndParseLineData, getAndParseStopData } from '../interactors/mapUtil'
 import Tooltip from './Tooltip'
 
 export interface Props {
@@ -19,14 +18,16 @@ export interface Props {
 
 const Component = (props: Props) => {
   const deckRef = useRef<DeckGL>(null)
-  const currentHighlight = useRecoilValue(store.currentHighlight)
+  const [currentHighlight, setCurrentHighlight] = useRecoilState(store.currentHighlight)
   const setCurrentHighlightQuery = useSetRecoilState(
     store.currentHighlightQuery
   )
   const globalStyle = useRecoilValue(store.globalStyle)
+  const mapView = useRecoilValue(store.mapView)
   const [mapLayers, updateLayerSetting] = useMapLayers()
   const [viewport, setViewport, fitBounds] = useMapViewport()
   const [allLineData, setAllLineData] = useState<DrawLineItem[]>([])
+  const [allStopData, setAllStopData] = useState<DrawStopItem[]>([])
   const [hoverPickInfo, setHoverPickInfo] = useState<PickInfo<DrawLineItem> | null>(null)
   const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
@@ -35,8 +36,8 @@ const Component = (props: Props) => {
       location: props.currentCity.location,
       zoom: 9,
     })
-    loadData(props.currentCity.id)
-  }, [props.currentCity])
+    loadData(mapView, props.currentCity.id)
+  }, [props.currentCity, mapView])
 
   useEffect(() => {
     if (currentHighlight?.stop_data) {
@@ -47,6 +48,9 @@ const Component = (props: Props) => {
       })
       updateLayerSetting({
         allLine: {
+          visible: false,
+        },
+        allStop: {
           visible: false,
         },
         stopDetail: {
@@ -63,6 +67,9 @@ const Component = (props: Props) => {
         allLine: {
           visible: false,
         },
+        allStop: {
+          visible: false,
+        },
         stopDetail: {
           visible: false,
         },
@@ -76,7 +83,10 @@ const Component = (props: Props) => {
     } else {
       updateLayerSetting({
         allLine: {
-          visible: true,
+          visible: mapView === 'line',
+        },
+        allStop: {
+          visible: mapView === 'stop',
         },
         stopDetail: {
           visible: false,
@@ -114,8 +124,24 @@ const Component = (props: Props) => {
         data: allLineData,
         foreground: dataSet.mapStyleList[globalStyle].foreground,
       },
+      allStop: {
+        visible: false,
+      },
     })
   }, [allLineData])
+
+  useEffect(() => {
+    updateLayerSetting({
+      allStop: {
+        visible: true,
+        data: allStopData,
+        foreground: dataSet.mapStyleList[globalStyle].foreground,
+      },
+      allLine: {
+        visible: false,
+      },
+    })
+  }, [allStopData])
 
   const onHoverItem = (info: PickInfo<any>) => {
     if (!info.object) {
@@ -132,10 +158,17 @@ const Component = (props: Props) => {
     handleClickLineObject(info)
   }
 
-  const loadData = async (cityId: string) => {
+  const loadData = async (type: string,  cityId: string) => {
     props.setLoading(true)
-    const totalPath = await getAndParseData(cityId)
-    setAllLineData(totalPath)
+    if (type === 'line') {
+      const totalPath = await getAndParseLineData(cityId)
+      setAllLineData(totalPath)
+    } else if (type === 'stop') {
+      const totalStop = await getAndParseStopData(cityId)
+      setAllStopData(totalStop)
+    }
+    setCurrentHighlightQuery(null)
+    setCurrentHighlight(null)
     props.setLoading(false)
   }
 

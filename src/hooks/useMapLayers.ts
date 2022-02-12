@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { gen_layer_allLine, gen_layer_stopDetail, gen_layer_lineDetail } from '../interactors/mapLayers'
-import type { Props_AllLine, Props_StopDetail, Props_LineDetail } from '../interactors/mapLayers'
+import { gen_layer_allLine, gen_layer_allStop, gen_layer_stopDetail, gen_layer_lineDetail } from '../interactors/mapLayers'
+import type { Props_AllLine, Props_AllStop, Props_StopDetail, Props_LineDetail } from '../interactors/mapLayers'
 import type { Layer } from 'deck.gl'
 
 interface UpdateLayerConf {
   allLine?: Partial<Props_AllLine>
+  allStop?: Partial<Props_AllStop>
   stopDetail?: Partial<Props_StopDetail>
   lineDetail?: Partial<Props_LineDetail>
 }
@@ -13,6 +14,11 @@ function useMapLayers(): [Layer<any>[], (props: UpdateLayerConf) => void] {
   const [mapLayers, setMapLayers] = useState<Layer<any>[]>([])
   const [allLineProp, setAllLineProp] = useState<Props_AllLine>({
     visible: true,
+    data: [],
+    foreground: [0, 0, 0, 100],
+  })
+  const [allStopProp, setAllStopProp] = useState<Props_AllStop>({
+    visible: false,
     data: [],
     foreground: [0, 0, 0, 100],
   })
@@ -36,6 +42,10 @@ function useMapLayers(): [Layer<any>[], (props: UpdateLayerConf) => void] {
         ...allLineProp,
         ...props.allLine,
       },
+      allStop: {
+        ...allStopProp,
+        ...props.allStop,
+      },
       stopDetail: {
         ...stopDetailProp,
         ...props.stopDetail,
@@ -46,13 +56,15 @@ function useMapLayers(): [Layer<any>[], (props: UpdateLayerConf) => void] {
       },
     }
     setAllLineProp(mergedProps.allLine)
+    setAllStopProp(mergedProps.allStop)
     setStopDetailProp(mergedProps.stopDetail)
     setLineDetailProp(mergedProps.lineDetail)
     // Generate new layers.
     const allLineLayer = gen_layer_allLine(mergedProps.allLine)
+    const allStopLayer = gen_layer_allStop(mergedProps.allStop)
     const stopDetailLayer = gen_layer_stopDetail(mergedProps.stopDetail)
     const lineDetailLayer = gen_layer_lineDetail(mergedProps.lineDetail)
-    setMapLayers([allLineLayer, stopDetailLayer, lineDetailLayer])
+    setMapLayers([allLineLayer, allStopLayer, stopDetailLayer, lineDetailLayer])
   }
 
   return [mapLayers, updateLayerSetting]

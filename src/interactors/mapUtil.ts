@@ -45,7 +45,7 @@ const p_decryptText = (encryptedText: string): string => {
   return decodedText
 }
 
-const p_parseLineData = (lineData: string): string[] => {
+const p_parseTextData = (lineData: string): string[] => {
   const lineDataArr = lineData.split('|').map(x => p_decryptText(x))
   return lineDataArr
 }
@@ -73,12 +73,12 @@ const decodeMinifyLineData = (
   return linePath
 }
 
-const getAndParseData = async (cityId: string) => {
+const getAndParseLineData = async (cityId: string) => {
   const requestPath = `/data/line/${cityId}.data`
   const requestSecret = import.meta.env.VITE_CDN_VERIFY_SECRET
   const url = p_generateDownloadUrl(requestSecret, requestPath)
   const data_line = await ky.get(url).text()
-  const parsed = p_parseLineData(data_line)
+  const parsed = p_parseTextData(data_line)
   if (parsed) {
     const totalPath: DrawLineItem[] = []
     for (let i = 0; i < parsed.length; i++) {
@@ -105,9 +105,34 @@ const getAndParseData = async (cityId: string) => {
   return []
 }
 
+const getAndParseStopData = async (cityId: string) => {
+  const requestPath = `/data/stop/${cityId}.data`
+  const requestSecret = import.meta.env.VITE_CDN_VERIFY_SECRET
+  const url = p_generateDownloadUrl(requestSecret, requestPath)
+  const data_stop = await ky.get(url).text()
+  const parsed = p_parseTextData(data_stop)
+  if (parsed) {
+    const totalStop: DrawStopItem[] = []
+    for (let i = 0; i < parsed.length; i++) {
+      const stop_str = parsed[i]
+      const stopInfoArr = stop_str.split(',')
+      if (stopInfoArr.length === 4) {
+        totalStop.push({
+          id: stopInfoArr[0],
+          name: stopInfoArr[1],
+          location: [parseFloat(stopInfoArr[2]), parseFloat(stopInfoArr[3])],
+        })
+      }
+    }
+    return totalStop
+  }
+  return []
+}
+
 export {
   convertLocation,
   generateViewStateOptions,
   decodeMinifyLineData,
-  getAndParseData,
+  getAndParseLineData,
+  getAndParseStopData,
 }
