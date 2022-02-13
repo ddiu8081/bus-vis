@@ -31,7 +31,7 @@ const Component = (props: Props) => {
   return (
     <div className="absolute flex flex-col items-end right-4 top-4 z-10">
       <div className="flex items-center">
-        <button
+        {/* <button
           type="button"
           onClick={handleToggleMapStyle}
           className="p-2.5 mr-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg"
@@ -41,7 +41,7 @@ const Component = (props: Props) => {
           ) : (
             <Icon icon="ri:moon-fill" className="w-5 h-5" />
           )}
-        </button>
+        </button> */}
         <div className="relative w-64 text-gray-600 dark:text-gray-300">
           <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
             <Icon icon="gg:search" className="w-5 h-5" />
