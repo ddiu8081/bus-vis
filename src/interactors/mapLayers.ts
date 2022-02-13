@@ -1,10 +1,10 @@
-import { PathLayer } from '@deck.gl/layers'
 import { hexToRgb } from './mapUtil'
 import type { RGBAColor } from 'deck.gl'
 
 import SingleStopViewLayer from './layers/SingleStopViewLayer'
 import SingleLineViewLayer from './layers/SingleLineViewLayer'
 import ScatterStopLayer from './layers/ScatterStopLayer'
+import MultiLineLayer from './layers/MultiLineLayer'
 
 export interface Props_AllLine {
   visible: boolean
@@ -13,15 +13,15 @@ export interface Props_AllLine {
 }
 
 const gen_layer_allLine = (props: Props_AllLine) => {
-  return new PathLayer<DrawLineItem>({
+  return new MultiLineLayer({
     id: 'all-line',
     visible: props.visible,
     data: props.data,
     pickable: true,
     autoHighlight: true,
-    widthScale: 10,
-    widthMinPixels: 1,
-    widthMaxPixels: 3,
+    widthScale: 20,
+    widthMinPixels: 2,
+    widthMaxPixels: 6,
     jointRounded: true,
     getPath: d => d.path,
     getColor: d => {
@@ -31,7 +31,8 @@ const gen_layer_allLine = (props: Props_AllLine) => {
       }
       return props.foreground
     },
-    getWidth: 10,
+    highlightColor: [99, 38, 38, 200],
+    getWidth: 4,
   })
 }
 

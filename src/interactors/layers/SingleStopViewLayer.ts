@@ -1,8 +1,10 @@
-import { PathLayer, IconLayer } from '@deck.gl/layers'
+import { IconLayer } from '@deck.gl/layers'
 import { CompositeLayer } from '@deck.gl/core'
 
 import { convertLocation } from '../mapUtil'
 import dataSet from '../../data/dataList'
+
+import MultiLineLayer from './MultiLineLayer'
 
 interface SingleStopViewLayerProps {
   id: string
@@ -13,17 +15,19 @@ interface SingleStopViewLayerProps {
 class SingleStopViewLayer extends CompositeLayer<StopData, SingleStopViewLayerProps> {
   renderLayers() {
     return [
-      new PathLayer<DrawLineItem>({
+      new MultiLineLayer({
         id: 'single_stop-stop_lines',
         data: this.props.data ? this.props.data.lines_detail: [],
         pickable: true,
         autoHighlight: true,
-        widthScale: 15,
-        widthMinPixels: 2,
-        widthMaxPixels: 4,
+        widthScale: 20,
+        widthMinPixels: 3,
+        widthMaxPixels: 6,
+        jointRounded: true,
         getPath: d => d.path,
-        getColor: [60, 10, 10, 50],
-        getWidth: 10,
+        getColor: [60, 10, 10, 70],
+        highlightColor: [99, 38, 38, 200],
+        getWidth: 4,
       }),
       new IconLayer<StopData>({
         id: `${this.props.id}-stop-icon`,

@@ -25,7 +25,7 @@ const mapStyleList : MapStyleList = {
   light: {
     id: 'light',
     styleUrl: 'mapbox://styles/ddiu8081/ckz82q8eb000c14o8uw4ky79d',
-    foreground: [60, 10, 10, 25],
+    foreground: [105, 78, 78, 30],
   },
   dark: {
     id: 'dark',

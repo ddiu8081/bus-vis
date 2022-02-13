@@ -192,6 +192,7 @@ const Component = (props: Props) => {
         layers={mapLayers}
         onHover={onHoverItem}
         onClick={onClickItem}
+        getCursor={() => hoverPickInfo ? 'pointer' : 'default'}
       >
         <Tooltip hoverPickInfo={hoverPickInfo} />
         <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle={dataSet.mapStyleList[globalStyle].styleUrl} />
