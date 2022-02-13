@@ -63,7 +63,7 @@ const Component = (props: Props) => {
 
   const infoDom = (
     <div className="flex items-center">
-      <span className="px-4 py-2 text-sm">{infoText}</span>
+      <span className="px-4 py-4 text-sm">{infoText}</span>
     </div>
   )
 
