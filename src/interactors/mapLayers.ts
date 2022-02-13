@@ -1,4 +1,5 @@
 import { PathLayer } from '@deck.gl/layers'
+import { hexToRgb } from './mapUtil'
 import type { RGBAColor } from 'deck.gl'
 
 import SingleStopViewLayer from './layers/SingleStopViewLayer'
@@ -23,7 +24,13 @@ const gen_layer_allLine = (props: Props_AllLine) => {
     widthMaxPixels: 3,
     jointRounded: true,
     getPath: d => d.path,
-    getColor: props.foreground,
+    getColor: d => {
+      if (d.color?.length === 6) {
+        const rgbArr = hexToRgb(d.color)
+        return rgbArr ? [...rgbArr, 200] : props.foreground
+      }
+      return props.foreground
+    },
     getWidth: 10,
   })
 }

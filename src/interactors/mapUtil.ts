@@ -85,12 +85,19 @@ const getAndParseLineData = async (cityId: string) => {
       const line_str = parsed[i]
       let lineId = ''
       let lineName = ''
+      let lineColor = undefined
       let minifyLineStr = line_str
       const lineInfoArr = line_str.split('@')
       if (lineInfoArr.length > 1) {
         const meta = lineInfoArr[0].split(',')
-        lineId = meta[0]
-        lineName = meta[1]
+        if (meta.length === 3) {
+          lineId = meta[0]
+          lineName = meta[1]
+          lineColor = meta[2]
+        } else if (meta.length === 2) {
+          lineId = meta[0]
+          lineName = meta[1]
+        }
         minifyLineStr = lineInfoArr[1]
       }
       const currentPath = decodeMinifyLineData(minifyLineStr)
@@ -98,6 +105,7 @@ const getAndParseLineData = async (cityId: string) => {
         id: lineId,
         name: lineName,
         path: currentPath,
+        color: lineColor,
       })
     }
     return totalPath
@@ -129,10 +137,20 @@ const getAndParseStopData = async (cityId: string) => {
   return []
 }
 
+function hexToRgb(hex: string): [number, number, number] | null {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result ? [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
+  ] : null
+}
+
 export {
   convertLocation,
   generateViewStateOptions,
   decodeMinifyLineData,
   getAndParseLineData,
   getAndParseStopData,
+  hexToRgb,
 }

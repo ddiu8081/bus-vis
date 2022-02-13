@@ -23,6 +23,7 @@ interface DrawLineItem {
   name: string
   path: [number, number][]
   polyline_min?: string
+  color?: string
 }
 
 interface SearchResult {

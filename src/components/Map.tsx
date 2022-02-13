@@ -155,7 +155,7 @@ const Component = (props: Props) => {
     if (!info.object) {
       return
     }
-    handleClickLineObject(info)
+    handleClickObject(info)
   }
 
   const loadData = async (type: string,  cityId: string) => {
@@ -172,7 +172,7 @@ const Component = (props: Props) => {
     props.setLoading(false)
   }
 
-  const handleClickLineObject = (pickItem: PickInfo<DrawLineItem | DrawStopItem>) => {
+  const handleClickObject = (pickItem: PickInfo<DrawLineItem | DrawStopItem>) => {
     if (pickItem.object?.id) {
       const type = 'path' in pickItem.object ? 'line' : 'stop'
       setCurrentHighlightQuery({
