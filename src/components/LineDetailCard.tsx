@@ -49,6 +49,15 @@ const Component = (props: Props) => {
     setCurrentHighlightQuery(null)
   }
 
+  const handleClickDirec = (lineData: LineData) => {
+    if (lineData.direc) {
+      setCurrentHighlightQuery({
+        type: 'line',
+        id: lineData.direc,
+      }) 
+    }
+  }
+
   const handleClickStopItem = (id: string) => {
     setCurrentHighlightQuery({
       type: 'stop',
@@ -67,7 +76,18 @@ const Component = (props: Props) => {
   const detailDom = (lineData: LineData) => (
     <div className="flex flex-col">
       <header className="pl-4 pr-12 py-3 text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-white/10">
-        <h2 className="text-lg font-medium">{lineData.name}</h2>
+        <h2 className="text-xl font-medium">{lineData.name.replace(/\(.*?\)$/g,'')}</h2>
+        <p className="text-sm opacity-75 my-1">
+          {lineData.start_stop}
+          <button
+            type="button"
+            onClick={() => handleClickDirec(lineData)}
+            className="inline px-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg"
+          >
+            { lineData.direc ? <Icon icon="gg:arrows-exchange" className="inline w-4 h-4" /> : <Icon icon="gg:arrow-right" className="inline w-4 h-4" /> }
+          </button>
+          {lineData.end_stop}
+        </p>
         <span className="opacity-50 text-sm">
           {lineData.distance} km
         </span>
