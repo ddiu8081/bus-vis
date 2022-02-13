@@ -5,6 +5,7 @@ import Map from './components/Map'
 import CornerPanel from './components/CornerPanel'
 import SidePanel from './components/SidePanel'
 import Spinner from './components/Spinner'
+import Meta from './components/Meta'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -16,6 +17,7 @@ function App() {
       <SidePanel currentCityId={currentCity.id} />
       <Spinner show={loading} />
       <Map setLoading={setLoading} currentCity={currentCity} />
+      <Meta />
     </div>
   )
 }
