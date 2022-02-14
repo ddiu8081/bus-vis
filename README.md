@@ -6,7 +6,7 @@
 
 [**Website**](https://bus.ljl.li) ｜ [**Blog**](https://notes.ljl.li/bus-vis/)
 
-![screenshot](https://cloud-upyun.ddiu.site/picture/2022/02/14/zBoYeK.png)
+![screenshot](https://cloud-upyun.ddiu.site/picture/2022/02/14/big04q.png)
 
 ## Tech Stacks
 
