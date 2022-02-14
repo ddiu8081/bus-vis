@@ -1,6 +1,34 @@
 import ky from 'ky'
+import CryptoJS from 'crypto-js'
 
-const api = ky.create({prefixUrl: 'https://service-4a2rnaqt-1251746595.bj.apigw.tencentcs.com/'})
+const createSignature = (request: Request, dateTime: string): string => {
+  var url = new URL(request.url)
+  const signingStr = [
+    `x-date: ${dateTime}`,
+    request.method.toUpperCase(),
+    request.headers.get('Accept'),
+    request.headers.get('Content-Type'),
+    '',
+    url.pathname + url.search,
+  ].join('\n')
+  const signing = CryptoJS.HmacSHA1(signingStr, import.meta.env.VITE_API_APPSECRET).toString(CryptoJS.enc.Base64)
+  const sign = `hmac id="${import.meta.env.VITE_API_APPKEY}", algorithm="hmac-sha1", headers="x-date", signature="${signing}"`
+  return sign
+}
+
+const api = ky.create({
+  prefixUrl: 'https://bus-api.ddiu.site/',
+  hooks: {
+    beforeRequest: [
+      request => {
+        const dateTime = new Date().toUTCString()
+        const sign = createSignature(request, dateTime)
+        request.headers.set('x-date', dateTime)
+        request.headers.set('Authorization', sign)
+      }
+    ]
+  }
+})
 
 const searchByKeyword = async (city: string, name: string): Promise<SearchResult> => {
   return await api.get('search', {
