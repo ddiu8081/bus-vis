@@ -9,7 +9,7 @@ const createSignature = (request: Request, dateTime: string): string => {
     request.headers.get('Accept'),
     request.headers.get('Content-Type'),
     '',
-    url.pathname + url.search,
+    url.pathname + decodeURIComponent(url.search),
   ].join('\n')
   const signing = CryptoJS.HmacSHA1(signingStr, import.meta.env.VITE_API_APPSECRET).toString(CryptoJS.enc.Base64)
   const sign = `hmac id="${import.meta.env.VITE_API_APPKEY}", algorithm="hmac-sha1", headers="x-date", signature="${signing}"`
