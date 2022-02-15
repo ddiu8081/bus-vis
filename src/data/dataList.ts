@@ -19,6 +19,11 @@ const cityList : CityList = {
     name: '南京',
     location: [118.8, 32.0],
   },
+  chengdu: {
+    id: 'chengdu',
+    name: '成都',
+    location: [104.0, 30.6],
+  },
 }
 
 const mapStyleList : MapStyleList = {
