@@ -37,7 +37,11 @@ const Component = (props: Props) => {
       zoom: 9,
     })
     loadData(mapView, props.currentCity.id)
-  }, [props.currentCity, mapView])
+  }, [props.currentCity])
+
+  useEffect(() => {
+    loadData(mapView, props.currentCity.id)
+  }, [mapView])
 
   useEffect(() => {
     if (currentHighlight?.stop_data) {
@@ -95,11 +99,13 @@ const Component = (props: Props) => {
           visible: false,
         },
       })
-      setViewport({
-        location: props.currentCity.location,
-        zoom: 9,
-        duration: 1000,
-      })
+      if (viewport?.longitude && viewport?.latitude && viewport.zoom) {
+        setViewport({
+          location: [viewport.longitude, viewport.latitude],
+          zoom: viewport.zoom - 0.5,
+          duration: 300,
+        }) 
+      }
     }
   }, [currentHighlight])
 
