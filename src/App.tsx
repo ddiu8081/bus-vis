@@ -13,10 +13,10 @@ function App() {
 
   return (
     <div className="w-screen h-screen relative">
-      <CornerPanel currentCity={currentCity} cityList={dataSet.cityList} setCity={setCurrentCity} />
-      <SidePanel currentCityId={currentCity.id} />
+      <CornerPanel />
+      <SidePanel />
       <Spinner show={loading} />
-      <Map setLoading={setLoading} currentCity={currentCity} />
+      <Map setLoading={setLoading} />
       <Meta />
     </div>
   )

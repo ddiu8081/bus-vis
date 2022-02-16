@@ -13,7 +13,6 @@ import Tooltip from './Tooltip'
 
 export interface Props {
   setLoading: (loading: boolean) => void
-  currentCity: CityItem
 }
 
 const Component = (props: Props) => {
@@ -23,6 +22,7 @@ const Component = (props: Props) => {
     store.currentHighlightQuery
   )
   const globalStyle = useRecoilValue(store.globalStyle)
+  const currentCity = useRecoilValue(store.currentCity)
   const mapView = useRecoilValue(store.mapView)
   const [mapLayers, updateLayerSetting] = useMapLayers()
   const [viewport, setViewport, fitBounds] = useMapViewport()
@@ -33,14 +33,14 @@ const Component = (props: Props) => {
 
   useEffect(() => {
     setViewport({
-      location: props.currentCity.location,
+      location: dataSet.cityList[currentCity].location,
       zoom: 9,
     })
-    loadData(mapView, props.currentCity.id)
-  }, [props.currentCity])
+    loadData(mapView, currentCity)
+  }, [currentCity])
 
   useEffect(() => {
-    loadData(mapView, props.currentCity.id)
+    loadData(mapView, currentCity)
   }, [mapView])
 
   useEffect(() => {

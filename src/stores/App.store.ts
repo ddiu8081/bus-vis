@@ -5,6 +5,11 @@ const globalStyle = atom<string>({
   default: 'light',
 })
 
+const currentCity = atom<string>({
+  key: 'currentCity',
+  default: 'beijing',
+})
+
 const mapView = atom<'line' | 'stop'>({
   key: 'mapView',
   default: 'line',
@@ -22,6 +27,7 @@ const currentHighlight = atom<HightlightItem | null>({
 
 export default {
   globalStyle,
+  currentCity,
   mapView,
   currentHighlightQuery,
   currentHighlight,

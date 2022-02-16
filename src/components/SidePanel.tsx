@@ -7,14 +7,13 @@ import SearchCard from './SearchCard'
 import StopDetailCard from './StopDetailCard'
 import LineDetailCard from './LineDetailCard'
 
-export interface Props {
-  currentCityId: string
-}
+export interface Props {}
 
 const Component = (props: Props) => {
   const [globalStyle, setGlobalStyle] = useRecoilState(store.globalStyle)
   const [searchText, setSearchText] = useState('')
   const currentHighlightQuery = useRecoilValue(store.currentHighlightQuery)
+  const currentCity = useRecoilValue(store.currentCity)
 
   useEffect(() => {})
 
@@ -55,7 +54,7 @@ const Component = (props: Props) => {
           />
         </div>
       </div>
-      {searchText && <SearchCard currentCityId={props.currentCityId} searchText={searchText} setSearchText={setSearchText} />}
+      {searchText && <SearchCard currentCityId={currentCity} searchText={searchText} setSearchText={setSearchText} />}
       {currentHighlightQuery?.type == 'stop' && <StopDetailCard queryId={currentHighlightQuery.id} />}
       {currentHighlightQuery?.type == 'line' && <LineDetailCard queryId={currentHighlightQuery.id} />}
     </div>
