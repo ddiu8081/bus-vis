@@ -24,6 +24,11 @@ const cityList : CityList = {
     name: '成都',
     location: [104.0, 30.6],
   },
+  chongqing: {
+    id: 'chongqing',
+    name: '重庆',
+    location: [106.5, 29.5],
+  },
 }
 
 const mapStyleList : MapStyleList = {
