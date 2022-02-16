@@ -29,6 +29,11 @@ const cityList : CityList = {
     name: '重庆',
     location: [106.5, 29.5],
   },
+  dalian: { 
+    id: 'dalian',
+    name: '大连',
+    location: [121.6, 38.9],
+  },
 }
 
 const mapStyleList : MapStyleList = {
