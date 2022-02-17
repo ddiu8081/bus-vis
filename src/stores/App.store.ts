@@ -1,13 +1,26 @@
-import { atom } from 'recoil'
+import { atom, selector } from 'recoil'
 
 const globalStyle = atom<string>({
   key: 'globalStyle',
   default: 'light',
 })
 
-const currentCity = atom<string>({
+const p_city = atom<string>({
+  key: 'p_city',
+  default: localStorage.getItem('busvis_selectCity') || 'beijing',
+})
+
+const currentCity = selector<string>({
   key: 'currentCity',
-  default: 'beijing',
+  get: ({ get }) => {
+    return get(p_city)
+  },
+  set: ({ set }, newValue) => {
+    if (typeof(newValue) === 'string') {
+      localStorage.setItem('busvis_selectCity', newValue) 
+    }
+    set(p_city, newValue)
+  }
 })
 
 const mapView = atom<'line' | 'stop'>({
