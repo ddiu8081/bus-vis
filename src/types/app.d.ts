@@ -68,6 +68,7 @@ interface LineData {
   bounds: [[number, number], [number, number]]
   start_stop: string
   end_stop: string
+  run_time: string
   loop: boolean
   status: boolean
   direc: string

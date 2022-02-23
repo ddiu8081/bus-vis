@@ -75,8 +75,8 @@ const Component = (props: Props) => {
 
   const detailDom = (lineData: LineData) => (
     <div className="flex flex-col">
-      <header className="pl-4 pr-12 py-3 text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-white/10">
-        <h2 className="text-xl font-medium">{lineData.name.replace(/\(.*?\)$/g,'')}</h2>
+      <header className="px-4 py-3 text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-white/10">
+        <h2 className="text-xl font-medium mr-12">{lineData.name.replace(/\(.*?\)$/g,'')}</h2>
         <p className="text-sm opacity-75 my-1">
           {lineData.start_stop}
           <button
@@ -88,10 +88,13 @@ const Component = (props: Props) => {
           </button>
           {lineData.end_stop}
         </p>
-        <span className="opacity-50 text-sm">
+        <p className="opacity-50 text-sm">
           {lineData.distance} km
-        </span>
+        </p>
       </header>
+      <section className="text-sm px-4 py-2 text-gray-500 bg-slate-100">
+        {lineData.run_time}
+      </section>
       <main className="py-2 text-gray-700 dark:text-gray-200">
         <h3 className="px-4 py-1.5 text-sm font-medium opacity-50">途径站点</h3>
         <div className="max-h-72 overflow-y-auto">
