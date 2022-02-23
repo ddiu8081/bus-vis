@@ -92,9 +92,9 @@ const Component = (props: Props) => {
           {lineData.distance} km
         </p>
       </header>
-      <section className="text-sm px-4 py-2 text-gray-500 bg-slate-100">
+      {lineData.run_time && <section className="text-sm px-4 py-2 text-gray-500 bg-slate-100">
         {lineData.run_time}
-      </section>
+      </section>}
       <main className="py-2 text-gray-700 dark:text-gray-200">
         <h3 className="px-4 py-1.5 text-sm font-medium opacity-50">途径站点</h3>
         <div className="max-h-72 overflow-y-auto">
